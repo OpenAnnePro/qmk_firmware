@@ -35,5 +35,10 @@ enum AP2KeyCodes {
 
 void annepro2LedDisable(void);
 void annepro2LedEnable(void);
+void annepro2LedSetProfile(void);
+void annepro2LedNextProfile(void);
+void annepro2LedPrevProfile(void);
+void annepro2LedGet(void);
+void annepro2LedGetNum(void);
 void annepro2LedUpdate(uint8_t row, uint8_t col);
 void annepro2LedUpdateRow(uint8_t row);

@@ -52,6 +52,32 @@ void annepro2LedEnable(void)
     sdPut(&SD0, CMD_LED_ON);
 }
 
+void annepro2LedSetProfile(void)
+{
+    sdPut(&SD0, CMD_LED_SET_PROFILE);
+}
+
+void annepro2LedNextProfile(void)
+{
+    sdPut(&SD0, CMD_LED_NEXT_PROFILE);
+}
+
+
+void annepro2LedPrevProfile(void)
+{
+    sdPut(&SD0, CMD_LED_PREV_PROFILE);
+}
+
+void annepro2LedGet(void)
+{
+    sdPut(&SD0, CMD_LED_GET_PROFILE);
+}
+
+void annepro2LedGetNum(void)
+{
+    sdPut(&SD0, CMD_LED_PREV_PROFILE);
+}
+
 void annepro2LedUpdate(uint8_t row, uint8_t col)
 {
     sdPut(&SD0, CMD_LED_SET);

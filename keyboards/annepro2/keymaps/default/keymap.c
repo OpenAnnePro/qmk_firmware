@@ -9,6 +9,12 @@ enum anne_pro_layers {
 enum custom_keys {
     KC_AP_LED_ON = AP2_SAFE_RANGE,
     KC_AP_LED_OFF,
+    KC_AP_LED_SET,
+    KC_AP_LED_SET_PROFILE,
+    KC_AP_LED_NEXT_PROFILE,
+    KC_AP_LED_PREV_PROFILE,
+    KC_AP_LED_GET_PROFILE,
+    KC_AP_LED_GET_NUM_PROFILES
 };
 /*
 * Layer _BASE_LAYER
@@ -113,9 +119,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 annepro2LedDisable();
             return false;
         case KC_AP_LED_ON:
-            if (record->event.pressed)
+            if (record->event.pressed) {
                 annepro2LedEnable();
-            return false;
+	    	annepro2LedNextProfile();
+	    }
+	    return false;
+	case KC_AP_LED_NEXT_PROFILE:
+	    if (record->event.pressed) 
+	        annepro2LedNextProfile();
+	    return false;
+	case KC_AP_LED_PREV_PROFILE:
+	    if (record->event.pressed)
+	        annepro2LedPrevProfile();
+	    return false;
         default:
             break;
     }
