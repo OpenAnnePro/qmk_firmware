@@ -52,16 +52,10 @@ void annepro2LedEnable(void)
     sdPut(&SD0, CMD_LED_ON);
 }
 
-void annepro2LedSetProfile(void)
-{
-    sdPut(&SD0, CMD_LED_SET_PROFILE);
-}
-
 void annepro2LedNextProfile(void)
 {
     sdPut(&SD0, CMD_LED_NEXT_PROFILE);
 }
-
 
 void annepro2LedPrevProfile(void)
 {
