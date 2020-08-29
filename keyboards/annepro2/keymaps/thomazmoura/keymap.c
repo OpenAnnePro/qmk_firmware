@@ -11,15 +11,15 @@ enum anne_pro_layers {
 /*
 * Layer _BASE_LAYER
 * ,-----------------------------------------------------------------------------------------.
-* | esc |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0  |  -  |  =  |    Bksp   |
+* |  `  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0  |  -  |  =  |    Bksp   |
 * |-----------------------------------------------------------------------------------------+
 * | Tab    |  q  |  w  |  e  |  r  |  t  |  y  |  u  |  i  |  o  |  p  |  [  |  ]  |   \    |
 * |-----------------------------------------------------------------------------------------+
-* | Caps    |  a  |  s  |  d  |  f  |  g  |  h  |  j  |  k  |  l  |  ;  |  '  |    Enter    |
+* | FN1     |  a  |  s  |  d  |  f  |  g  |  h  |  j  |  k  |  l  |  ;  |  '  |    Enter    |
 * |-----------------------------------------------------------------------------------------+
 * | Shift      |  z  |  x  |  c  |  v  |  b  |  n  |  m  |  ,  |  .  |  /  |    Shift       |
 * |-----------------------------------------------------------------------------------------+
-* | Ctrl  |  L1   |  Alt  |               space             |  Alt  |  FN1  |  FN2  | Ctrl  |
+* | Ctrl  |  FN2  |  Alt  |               space             |  Win  |  FN2  |  FN1  | Ctrl  |
 * \-----------------------------------------------------------------------------------------/
 * Layer TAP in _BASE_LAYER
 * ,-----------------------------------------------------------------------------------------.
@@ -27,11 +27,11 @@ enum anne_pro_layers {
 * |-----------------------------------------------------------------------------------------+
 * |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 * |-----------------------------------------------------------------------------------------+
-* |         |     |     |     |     |     |     |     |     |     |     |     |             |
+* | ESC     |     |     |     |     |     |     |     |     |     |     |     |             |
 * |-----------------------------------------------------------------------------------------+
-* |            |     |     |     |     |     |     |     |     |     |     |       UP       |
+* |            |     |     |     |     |     |     |     |     |     |     |                |
 * |-----------------------------------------------------------------------------------------+
-* |       |       |       |                                 |       |  LEFT | DOWN  | RIGHT |
+* |       |       |       |                                 |       |       |       |       |
 * \-----------------------------------------------------------------------------------------/
 */
  const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -40,20 +40,20 @@ enum anne_pro_layers {
     KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_LBRC, KC_RBRC, KC_BSLS,
     LT(_FN1_LAYER,KC_ESC), KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT, KC_ENT,
     KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT,
-    KC_LCTL, KC_LGUI, KC_LALT, KC_SPC, KC_RALT, _FN1_LAYER, LT(_FN2_LAYER,KC_APP), KC_RCTL
+    KC_LCTL, _FN2_LAYER, KC_LALT, KC_SPC, KC_LGUI, LT(_FN2_LAYER,KC_APP), _FN1_LAYER, KC_RCTL
 ),
   /*
   * Layer _FN1_LAYER
   * ,-----------------------------------------------------------------------------------------.
-  * |  `  |  F1 |  F2 |  F3 |  F4 |  F5 |  F6 |  F7 |  F8 |  F9 | F10 | F11 | F12 |  DELETE   |
+  * | ESC |  F1 |  F2 |  F3 |  F4 |  F5 |  F6 |  F7 |  F8 |  F9 | F10 | F11 | F12 |  DELETE   |
   * |-----------------------------------------------------------------------------------------+
-  * | Tab    |  q  | UP  |  e  |  r  |  t  |  y  |  u  |  i  |  o  | PS | HOME | END |   \    |
+  * | Tab    |  q  |  w  |  e  |  r  |  t  |  y  |  u  |  i  |  o  |  p  |  [  |  ]  |   \    |
   * |-----------------------------------------------------------------------------------------+
-  * | Esc     |LEFT |DOWN |RIGHT|  f  |  g  |  h  |  j  |  k  |  l  | PGUP|PGDN |    Enter    |
+  * | ESC     |  a  |  s  |  d  |  f  |  g  | LFT | DWN | UP  | RGT |  ;  |  '  |    Enter    |
   * |-----------------------------------------------------------------------------------------+
   * | Shift      |V-UP |V-DWN|MUTE |  v  |  b  |  n  |  m  |  ,  |INSRT| DEL |    Shift       |
   * |-----------------------------------------------------------------------------------------+
-  * | Ctrl  |  L1   |  Alt  |               space             |  Alt  |  FN1  |  FN2  | Ctrl  |
+  * | Ctrl  |  FN2  |  Alt  |               space             |  Win  |  FN2  |  FN1  | Ctrl  |
   * \-----------------------------------------------------------------------------------------/
   *
   */
@@ -62,20 +62,20 @@ enum anne_pro_layers {
     KC_TRNS, KC_TRNS, KC_UP, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PSCR, KC_HOME, KC_END, KC_TRNS,
     KC_TRNS, KC_LEFT, KC_DOWN, KC_RGHT, KC_TRNS, KC_LEFT, KC_DOWN, KC_UP, KC_LEFT, KC_TRNS, KC_PGUP, KC_PGDN, KC_TRNS,
     KC_TRNS, KC_VOLU, KC_VOLD, KC_MUTE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_INS, KC_DEL, KC_TRNS,
-    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, MO(_FN2_LAYER), KC_TRNS
+    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, MO(_FN2_LAYER), MO(_FN1_LAYER), KC_TRNS
 ),
   /*
   * Layer _FN2_LAYER
   * ,-----------------------------------------------------------------------------------------.
-  * |  ~  | BT1 | BT2 | BT3 | BT4 |  F5 |  F6 |  F7 |LEDOF|LEDON| F10 | F11 | F12 |    Bksp   |
+  * |  `  | BT1 | BT2 | BT3 | BT4 |  F5 |  F6 |  F7 |LEDOF|LEDON| F10 | F11 | F12 |    Bksp   |
   * |-----------------------------------------------------------------------------------------+
-  * | Tab    |  q  | UP  |  e  |  r  |  t  |  y  |  u  |  i  |  o  | PS | HOME | END |   \    |
+  * | Tab    |  q  |  w  |  e  |  r  |  t  | MUTE| PREV| PLAY| NEXT|  p  |  [  |  ]  |   \    |
   * |-----------------------------------------------------------------------------------------+
-  * | Esc     |LEFT |DOWN |RIGHT|  f  |  g  |  h  |  j  |  k  |  l  | PGUP|PGDN |    Enter    |
+  * | ESC     |  a  |  s  |  d  |  f  |  g  | HOME|PGDWN| PGUP| END |  ;  |  '  |    Enter    |
   * |-----------------------------------------------------------------------------------------+
   * | Shift      |  z  |  x  |  c  |  v  |  b  |  n  |  m  |  ,  |INSRT| DEL |    Shift       |
   * |-----------------------------------------------------------------------------------------+
-  * | Ctrl  |  L1   |  Alt  |               space             |  Alt  |  FN1  |  FN2  | Ctrl  |
+  * | Ctrl  |  FN2  |  Alt  |               space             |  Win  |  FN2  |  FN1  | Ctrl  |
   * \-----------------------------------------------------------------------------------------/
   *
   */
@@ -84,7 +84,7 @@ enum anne_pro_layers {
     KC_TRNS, KC_TRNS, KC_UP, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PSCR, KC_HOME, KC_END, KC_TRNS,
     KC_TRNS, KC_LEFT, KC_DOWN, KC_RGHT, KC_TRNS, KC_TRNS, KC_HOME, KC_PGDN, KC_PGUP, KC_END, KC_TRNS, KC_TRNS, KC_TRNS,
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_INS, KC_DEL, KC_TRNS,
-    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, MO(_FN1_LAYER), MO(_FN2_LAYER), KC_TRNS
+    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, MO(_FN2_LAYER), MO(_FN1_LAYER), KC_TRNS
  ),
 };
 const uint16_t keymaps_size = sizeof(keymaps);
