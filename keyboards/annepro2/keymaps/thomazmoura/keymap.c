@@ -85,7 +85,7 @@ enum anne_pro_layers {
   *
   */
  [_MEDIA_AND_NAVIGATION_LAYER] = KEYMAP( /* Base */
-    KC_AP2_USB, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, _______, _______, _______, _______,  KC_AP_LED_ON, KC_AP_LED_OFF,_______, _______, _______,
+    KC_AP2_USB, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, _______, _______, _______, _______,  KC_AP_LED_ON, KC_AP_LED_OFF, _______, _______, KC_AP2_BT_UNPAIR,
        _______,    _______,    _______,      KC_UP,    _______, _______, KC_MUTE, KC_MPRV, KC_MPLY,       KC_MNXT,       _______, KC_BRID, KC_BRIU, _______,
        _______,    _______,    KC_LEFT,    KC_DOWN,    KC_RGHT, _______, KC_HOME, KC_PGDN, KC_PGUP,        KC_END,       _______, _______, _______,
        _______,    _______,    _______,    _______,    _______, _______, KC_VOLD, KC_VOLU, _______,       _______,       _______, _______,
@@ -109,8 +109,8 @@ enum anne_pro_layers {
  [_NUMPAD_LAYER] = KEYMAP( /* Base */
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______,    KC_7,    KC_8,    KC_9, _______, KC_PPLS,    KC_7,    KC_8,    KC_9, KC_PDOT, _______, _______, _______,
-    _______,    KC_0,    KC_4,    KC_5,    KC_6, _______,    KC_0,    KC_4,    KC_5,    KC_6, KC_PSLS, _______, _______,
-    _______, _______,    KC_1,    KC_2,    KC_3, KC_COMM, KC_PAST,    KC_1,    KC_2,    KC_3, KC_PMNS, _______,
+    _______,    KC_0,    KC_4,    KC_5,    KC_6, _______,    KC_0,    KC_4,    KC_5,    KC_6, KC_PMNS, _______, _______,
+    _______, _______,    KC_1,    KC_2,    KC_3, KC_COMM, KC_PAST,    KC_1,    KC_2,    KC_3, KC_PSLS, _______,
     _______, _______, _______,    KC_0, _______, _______, _______, _______
  ),
   /*
