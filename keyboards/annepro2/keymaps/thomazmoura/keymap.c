@@ -1,9 +1,7 @@
-#define MK_3_SPEED
-#define MK_MOMENTARY_ACCEL
-
 #include <stdint.h>
 #include "annepro2.h"
 #include "qmk_ap2_led.h"
+#include "config.h"
 
 enum anne_pro_layers {
   _BASE_LAYER,
