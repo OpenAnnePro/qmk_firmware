@@ -56,11 +56,11 @@ enum {
 */
  const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  [_BASE_LAYER] = KEYMAP( /* Base */
-     KC_GRV,                    KC_1,  KC_2,  KC_3,  KC_4,  KC_5,   KC_6,      KC_7,    KC_8,     KC_9,     KC_0, KC_MINS,  KC_EQL, KC_BSPC,
-    LT(_MOUSE_LAYER,KC_TAB),    KC_Q,  KC_W,  KC_E,  KC_R,  KC_T,   KC_Y,      KC_U,    KC_I,     KC_O,     KC_P, KC_LBRC, KC_RBRC, KC_BSLS,
-    TD(ESC_LAYR), KC_A,  KC_S,  KC_D,  KC_F,  KC_G,   KC_H,      KC_J,    KC_K,     KC_L,  KC_SCLN, KC_QUOT,  KC_ENT,
-    KC_LSFT, KC_Z,              KC_X,  KC_C,  KC_V,  KC_B,  KC_N,   KC_M,   KC_COMM,  KC_DOT,  KC_SLSH,  KC_RSFT,
-    KC_LCTL,     TT(_NUMPAD_LAYER), KC_LALT, LT(_MEDIA_AND_NAVIGATION_LAYER, KC_SPC), KC_LGUI, LT(_MEDIA_AND_NAVIGATION_LAYER,KC_APP), MO(_FUNCTION_LAYER), KC_RCTL
+          KC_GRV,    KC_1,    KC_2,  KC_3,  KC_4,  KC_5,      KC_6,    KC_7,    KC_8,     KC_9,     KC_0,   KC_MINS,  KC_EQL, KC_BSPC,
+          KC_TAB,    KC_Q,    KC_W,  KC_E,  KC_R,  KC_T,      KC_Y,    KC_U,    KC_I,     KC_O,     KC_P,   KC_LBRC, KC_RBRC, KC_BSLS,
+    TD(ESC_LAYR),    KC_A,    KC_S,  KC_D,  KC_F,  KC_G,      KC_H,    KC_J,    KC_K,     KC_L,  KC_SCLN,   KC_QUOT,  KC_ENT,
+         KC_LSFT,    KC_Z,    KC_X,  KC_C,  KC_V,  KC_B,      KC_N,    KC_M, KC_COMM,   KC_DOT,  KC_SLSH,   KC_RSFT,
+         KC_LCTL, KC_LGUI, KC_LALT, LT(_MEDIA_AND_NAVIGATION_LAYER, KC_SPC), KC_RALT,   KC_APP, MO(_FUNCTION_LAYER), KC_RCTL
 ),
   /*
   * Layer _FUNCTION_LAYER
@@ -135,7 +135,7 @@ enum {
   * |-----------------------------------------------------------------------------------------+
   * |        |     |     |     |     |     |ACL2 |WL-U |MS-U |WL-D |ACL1 |ACL0 |     |        |
   * |-----------------------------------------------------------------------------------------+
-  * |         |     |     |     |     |     |BTN3 |MS-L |MS-D |MS-R |BTN2 |     |             |
+  * |         |     | ACL0 | ACL1 | ACL2 |     |BTN3 |MS-L |MS-D |MS-R |BTN2 |     |             |
   * |-----------------------------------------------------------------------------------------+
   * |            |     |     |     |     |     |BTN4 |BTN5 |WL-L |WL-R |     |                |
   * |-----------------------------------------------------------------------------------------+
@@ -145,8 +145,8 @@ enum {
   */
  [_MOUSE_LAYER] = KEYMAP( /* Base */
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    _______, _______, KC_ACL0, KC_ACL1, KC_ACL2, _______, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R, _______, _______, _______, _______,
-    _______, _______, _______, _______, _______, _______, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, KC_BTN2, _______, _______,
+    _______, _______, _______, _______, _______, _______, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R, _______, _______, _______, _______,
+    _______, _______, KC_ACL0, KC_ACL1, KC_ACL2, _______, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, KC_BTN2, _______, _______,
     _______, _______, _______, _______, _______, _______, KC_BTN3, KC_BTN4, KC_BTN5, _______, _______, _______, 
     _______, _______, _______, KC_BTN1, _______, _______, _______, _______
  ),
