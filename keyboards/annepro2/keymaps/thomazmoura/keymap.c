@@ -171,8 +171,8 @@ layer_state_t layer_state_set_user(layer_state_t layer) {
 uint8_t cur_dance(qk_tap_dance_state_t *state);
 
 // Functions associated with individual tap dances
-void ql_finished(qk_tap_dance_state_t *state, void *user_data);
-void ql_reset(qk_tap_dance_state_t *state, void *user_data);
+void esc_layer_finished(qk_tap_dance_state_t *state, void *user_data);
+void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data);
 
 // Determine the current tap dance state
 uint8_t cur_dance(qk_tap_dance_state_t *state) {
@@ -192,7 +192,7 @@ static tap ql_tap_state = {
 };
 
 // Functions that control what our tap dance key does
-void ql_finished(qk_tap_dance_state_t *state, void *user_data) {
+void esc_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
   ql_tap_state.state = cur_dance(state);
   switch (ql_tap_state.state) {
     case SINGLE_TAP:
@@ -217,7 +217,7 @@ void ql_finished(qk_tap_dance_state_t *state, void *user_data) {
   }
 }
 
-void ql_reset(qk_tap_dance_state_t *state, void *user_data) {
+void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
   // If the key was held down and now is released then switch off the layer
   if (ql_tap_state.state == SINGLE_HOLD) {
     layer_off(_FUNCTION_LAYER);
@@ -230,5 +230,5 @@ void ql_reset(qk_tap_dance_state_t *state, void *user_data) {
 
 // Associate our tap dance key with its functionality
 qk_tap_dance_action_t tap_dance_actions[] = {
-  [ESC_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, ql_finished, ql_reset, 275)
+  [ESC_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, esc_layer_finished, esc_layer_reset, 275)
 };
