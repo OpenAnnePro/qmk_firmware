@@ -35,7 +35,8 @@ enum {
   ANIMATEDBREATHING,
   ANIMATEDSPECTRUM,
   WHITE,
-  GOLDEN
+  GOLDEN,
+  TRANSPARENT
 };
 
 enum {
@@ -181,7 +182,7 @@ bool led_update_user(led_t leds) {
     is_caps_set = true;
   } else {
     is_caps_set = false;
-    annepro2LedSetProfile(ANIMATEDSPECTRUM);
+    annepro2LedSetProfile(TRANSPARENT);
   }
   return true;
 }
@@ -235,7 +236,7 @@ void esc_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
         // If already set, then switch it off
         layer_off(_MOUSE_LAYER);
         if(!is_caps_set) {
-          annepro2LedSetProfile(ANIMATEDSPECTRUM);
+          annepro2LedSetProfile(TRANSPARENT);
         }
       } else {
         // If not already set, then switch the layer on
@@ -259,13 +260,13 @@ void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
   if (ql_tap_state.state == SINGLE_HOLD) {
     layer_off(_FUNCTION_LAYER);
     if(!is_caps_set) {
-      annepro2LedSetProfile(ANIMATEDSPECTRUM);
+      annepro2LedSetProfile(TRANSPARENT);
     }
   }
   if (ql_tap_state.state == DOUBLE_HOLD) {
     layer_off(_NUMPAD_LAYER);
     if(!is_caps_set) {
-      annepro2LedSetProfile(ANIMATEDSPECTRUM);
+      annepro2LedSetProfile(TRANSPARENT);
     }
   }
   ql_tap_state.state = 0;
