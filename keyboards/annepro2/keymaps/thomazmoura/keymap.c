@@ -25,11 +25,17 @@ enum {
 };
 
 enum {
-    WHITE,
-    RED,
-    GREEN,
-    BLUE,
-    SPECTRUM
+  RED,
+  GREEN,
+  BLUE,
+  RAINBOWHORIZONTAL,
+  RAINBOWVERTICAL, 
+  ANIMATEDRAINBOWVERTICAL,
+  ANIMATEDRAINBOWWATERFALL, 
+  ANIMATEDBREATHING,
+  ANIMATEDSPECTRUM,
+  WHITE,
+  GOLDEN
 };
 
 enum {
@@ -167,6 +173,18 @@ void matrix_init_user(void) {
 void matrix_scan_user(void) {
 }
 
+bool is_caps_set = false;
+// The function to handle the caps lock logic
+bool led_update_user(led_t leds) {
+  if (leds.caps_lock) {
+    annepro2LedSetProfile(RED);
+    is_caps_set = true;
+  } else {
+    is_caps_set = false;
+    annepro2LedSetProfile(ANIMATEDSPECTRUM);
+  }
+  return true;
+}
 layer_state_t layer_state_set_user(layer_state_t layer) {
     return layer;
 }
@@ -200,29 +218,38 @@ static tap ql_tap_state = {
 // Functions that control what our tap dance key does
 void esc_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
   ql_tap_state.state = cur_dance(state);
+
   switch (ql_tap_state.state) {
     case SINGLE_TAP:
       tap_code(KC_ESC);
       break;
     case SINGLE_HOLD:
       layer_on(_FUNCTION_LAYER);
-      annepro2LedSetProfile(WHITE);
+      if(!is_caps_set) {
+        annepro2LedSetProfile(GREEN);
+      }
       break;
     case DOUBLE_TAP:
       // Check to see if the layer is already set
       if (layer_state_is(_MOUSE_LAYER)) {
         // If already set, then switch it off
         layer_off(_MOUSE_LAYER);
-        annepro2LedSetProfile(SPECTRUM);
+        if(!is_caps_set) {
+          annepro2LedSetProfile(ANIMATEDSPECTRUM);
+        }
       } else {
         // If not already set, then switch the layer on
         layer_on(_MOUSE_LAYER);
-        annepro2LedSetProfile(BLUE);
+        if(!is_caps_set) {
+          annepro2LedSetProfile(BLUE);
+        }
       }
       break;
     case DOUBLE_HOLD:
       layer_on(_NUMPAD_LAYER);
-      annepro2LedSetProfile(GREEN);
+      if(!is_caps_set) {
+        annepro2LedSetProfile(GOLDEN);
+      }
       break;
   }
 }
@@ -231,11 +258,15 @@ void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
   // If the key was held down and now is released then switch off the layer
   if (ql_tap_state.state == SINGLE_HOLD) {
     layer_off(_FUNCTION_LAYER);
-    annepro2LedSetProfile(SPECTRUM);
+    if(!is_caps_set) {
+      annepro2LedSetProfile(ANIMATEDSPECTRUM);
+    }
   }
   if (ql_tap_state.state == DOUBLE_HOLD) {
     layer_off(_NUMPAD_LAYER);
-    annepro2LedSetProfile(SPECTRUM);
+    if(!is_caps_set) {
+      annepro2LedSetProfile(ANIMATEDSPECTRUM);
+    }
   }
   ql_tap_state.state = 0;
 }
