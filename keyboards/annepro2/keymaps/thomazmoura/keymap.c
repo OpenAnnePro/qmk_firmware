@@ -25,6 +25,14 @@ enum {
 };
 
 enum {
+    WHITE,
+    RED,
+    GREEN,
+    BLUE,
+    SPECTRUM
+};
+
+enum {
     ESC_LAYR, // Our custom tap dance key; add any other tap dance keys to this enum 
 };
 
@@ -35,9 +43,7 @@ enum {
 * |-----------------------------------------------------------------------------------------+
 * | Tab    |  q  |  w  |  e  |  r  |  t  |  y  |  u  |  i  |  o  |  p  |  [  |  ]  |   \    |
 * |-----------------------------------------------------------------------------------------+
-* | FN1     |  a  |  s  |  d  |  f  |  g  |  h  |  j  |  k  |  l  |  ;  |  '  |    Enter    |
-* |-----------------------------------------------------------------------------------------+
-* | Shift      |  z  |  x  |  c  |  v  |  b  |  n  |  m  |  ,  |  .  |  /  |    Shift       |
+* |-----------------------------------------------------------------------------------------+ | Shift      |  z  |  x  |  c  |  v  |  b  |  n  |  m  |  ,  |  .  |  /  |    Shift       |
 * |-----------------------------------------------------------------------------------------+
 * | Ctrl  |  FN2  |  Alt  |                FN2              |  Win  |  FN2  |  FN1  | Ctrl  |
 * \-----------------------------------------------------------------------------------------/
@@ -200,19 +206,23 @@ void esc_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
       break;
     case SINGLE_HOLD:
       layer_on(_FUNCTION_LAYER);
+      annepro2LedSetProfile(WHITE);
       break;
     case DOUBLE_TAP:
       // Check to see if the layer is already set
       if (layer_state_is(_MOUSE_LAYER)) {
         // If already set, then switch it off
         layer_off(_MOUSE_LAYER);
+        annepro2LedSetProfile(SPECTRUM);
       } else {
         // If not already set, then switch the layer on
         layer_on(_MOUSE_LAYER);
+        annepro2LedSetProfile(BLUE);
       }
       break;
     case DOUBLE_HOLD:
       layer_on(_NUMPAD_LAYER);
+      annepro2LedSetProfile(GREEN);
       break;
   }
 }
@@ -221,9 +231,11 @@ void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
   // If the key was held down and now is released then switch off the layer
   if (ql_tap_state.state == SINGLE_HOLD) {
     layer_off(_FUNCTION_LAYER);
+    annepro2LedSetProfile(SPECTRUM);
   }
   if (ql_tap_state.state == DOUBLE_HOLD) {
     layer_off(_NUMPAD_LAYER);
+    annepro2LedSetProfile(SPECTRUM);
   }
   ql_tap_state.state = 0;
 }
@@ -232,13 +244,4 @@ void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
 qk_tap_dance_action_t tap_dance_actions[] = {
   [ESC_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, esc_layer_finished, esc_layer_reset, 225)
 };
-
-bool led_update_user(led_t leds) {
-  if (leds.caps_lock) {
-    annepro2LedSetMask(CAPS_LOCATION);
-  } else {
-    annepro2LedClearMask(CAPS_LOCATION);
-  }
-  return true;
-}
 
