@@ -10,3 +10,5 @@
 #define MK_3_SPEED
 #define MK_MOMENTARY_ACCEL
 
+// This is ROW*MATRIX_COLS + COL
+#define CAPS_LOCATION (MATRIX_COLS * 0 + 0)
