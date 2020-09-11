@@ -5,10 +5,10 @@
 
 enum anne_pro_layers {
   _BASE_LAYER,
+  _MOUSE_LAYER,
   _FUNCTION_LAYER,
   _MEDIA_AND_NAVIGATION_LAYER,
   _NUMPAD_LAYER,
-  _MOUSE_LAYER,
 };
 
 typedef struct {
@@ -174,7 +174,19 @@ void matrix_init_user(void) {
 void matrix_scan_user(void) {
 }
 
+// Declare the functions to be used with your tap dance key(s)
+
+// Function associated with all tap dances
+uint8_t cur_dance(qk_tap_dance_state_t *state);
+
+// Functions associated with individual tap dances
+void resetProfileColor(void);
+void main_layer_finished(qk_tap_dance_state_t *state, void *user_data);
+void main_layer_reset(qk_tap_dance_state_t *state, void *user_data);
+
 bool is_caps_set = false;
+bool is_mouse_layer_set = false;
+
 // The function to handle the caps lock logic
 bool led_update_user(led_t leds) {
   if (leds.caps_lock) {
@@ -182,22 +194,13 @@ bool led_update_user(led_t leds) {
     is_caps_set = true;
   } else {
     is_caps_set = false;
-    annepro2LedSetProfile(TRANSPARENT);
+    resetProfileColor();
   }
   return true;
 }
 layer_state_t layer_state_set_user(layer_state_t layer) {
     return layer;
 }
-
-// Declare the functions to be used with your tap dance key(s)
-
-// Function associated with all tap dances
-uint8_t cur_dance(qk_tap_dance_state_t *state);
-
-// Functions associated with individual tap dances
-void main_layer_finished(qk_tap_dance_state_t *state, void *user_data);
-void main_layer_reset(qk_tap_dance_state_t *state, void *user_data);
 
 // Determine the current tap dance state
 uint8_t cur_dance(qk_tap_dance_state_t *state) {
@@ -215,6 +218,16 @@ static tap main_tap_state = {
   .is_press_action = true,
   .state = 0
 };
+
+void resetProfileColor(void) {
+  if(is_caps_set) {
+    annepro2LedSetProfile(RED);
+  } else if(is_mouse_layer_set) {
+    annepro2LedSetProfile(BLUE);
+  } else {
+    annepro2LedSetProfile(TRANSPARENT);
+  }
+}
 
 // Functions that control what our tap dance key does
 void main_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
@@ -235,12 +248,12 @@ void main_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
       if (layer_state_is(_MOUSE_LAYER)) {
         // If already set, then switch it off
         layer_off(_MOUSE_LAYER);
-        if(!is_caps_set) {
-          annepro2LedSetProfile(TRANSPARENT);
-        }
+        is_mouse_layer_set = false;
+        resetProfileColor();
       } else {
         // If not already set, then switch the layer on
         layer_on(_MOUSE_LAYER);
+        is_mouse_layer_set = true;
         if(!is_caps_set) {
           annepro2LedSetProfile(BLUE);
         }
@@ -259,15 +272,11 @@ void main_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
   // If the key was held down and now is released then switch off the layer
   if (main_tap_state.state == SINGLE_HOLD) {
     layer_off(_FUNCTION_LAYER);
-    if(!is_caps_set) {
-      annepro2LedSetProfile(TRANSPARENT);
-    }
+    resetProfileColor();
   }
   if (main_tap_state.state == DOUBLE_HOLD) {
     layer_off(_NUMPAD_LAYER);
-    if(!is_caps_set) {
-      annepro2LedSetProfile(TRANSPARENT);
-    }
+    resetProfileColor();
   }
   main_tap_state.state = 0;
 }
