@@ -180,6 +180,7 @@ void matrix_scan_user(void) {
 uint8_t cur_dance(qk_tap_dance_state_t *state);
 
 // Functions associated with individual tap dances
+void enableProfileColor(uint8_t profile);
 void resetProfileColor(void);
 void main_layer_finished(qk_tap_dance_state_t *state, void *user_data);
 void main_layer_reset(qk_tap_dance_state_t *state, void *user_data);
@@ -190,8 +191,8 @@ bool is_mouse_layer_set = false;
 // The function to handle the caps lock logic
 bool led_update_user(led_t leds) {
   if (leds.caps_lock) {
-    annepro2LedSetProfile(RED);
     is_caps_set = true;
+    enableProfileColor(RED);
   } else {
     is_caps_set = false;
     resetProfileColor();
@@ -219,6 +220,14 @@ static tap main_tap_state = {
   .state = 0
 };
 
+void enableProfileColor (uint8_t profile) {
+  if(is_caps_set) {
+    annepro2LedSetProfile(RED);
+  } else {
+    annepro2LedSetProfile(profile);
+  }
+}
+
 void resetProfileColor(void) {
   if(is_caps_set) {
     annepro2LedSetProfile(RED);
@@ -239,9 +248,7 @@ void main_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
       break;
     case SINGLE_HOLD:
       layer_on(_FUNCTION_LAYER);
-      if(!is_caps_set) {
-        annepro2LedSetProfile(GREEN);
-      }
+      enableProfileColor(GREEN);
       break;
     case DOUBLE_TAP:
       // Check to see if the layer is already set
@@ -254,16 +261,12 @@ void main_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
         // If not already set, then switch the layer on
         layer_on(_MOUSE_LAYER);
         is_mouse_layer_set = true;
-        if(!is_caps_set) {
-          annepro2LedSetProfile(BLUE);
-        }
+        enableProfileColor(BLUE);
       }
       break;
     case DOUBLE_HOLD:
       layer_on(_NUMPAD_LAYER);
-      if(!is_caps_set) {
-        annepro2LedSetProfile(GOLDEN);
-      }
+      enableProfileColor(GOLDEN);
       break;
   }
 }
