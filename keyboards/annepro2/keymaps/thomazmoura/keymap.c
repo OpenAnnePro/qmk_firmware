@@ -287,14 +287,9 @@ void resetProfileColor(void) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-    //case NEXT_PROFILE:
-      //if (record->event.pressed) {
-        //if(current_profile >= TRANSPARENT)
-          //current_profile = RED;
-        //else
-          //current_profile++;
-      //}
-      //return false;
+    case NEXT_PROFILE:
+      base_profile = ANIMATEDSPECTRUM;
+      return false;
     //case LT(_MEDIA_AND_NAVIGATION_LAYER, KC_SPC):
       //if (record -> event.pressed) {
         //enableProfileColor(navigation_profile);
