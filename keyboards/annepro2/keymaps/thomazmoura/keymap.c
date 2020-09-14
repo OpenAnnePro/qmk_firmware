@@ -39,6 +39,11 @@ enum {
   TRANSPARENT
 };
 
+enum custom_codes {
+  NEXT_PROFILE = SAFE_RANGE,
+  ENABLE_OR_DISABLE_LEDS,
+};
+
 enum {
     MAIN_TAP_DANCE, // Our custom tap dance key; add any other tap dance keys to this enum 
 };
@@ -73,7 +78,7 @@ enum {
             KC_TAB,    KC_Q,    KC_W,  KC_E,  KC_R,  KC_T,      KC_Y,    KC_U,    KC_I,           KC_O,     KC_P,   KC_LBRC, KC_RBRC, KC_BSLS,
 TD(MAIN_TAP_DANCE),    KC_A,    KC_S,  KC_D,  KC_F,  KC_G,      KC_H,    KC_J,    KC_K,           KC_L,  KC_SCLN,   KC_QUOT,  KC_ENT,
            KC_LSFT,    KC_Z,    KC_X,  KC_C,  KC_V,  KC_B,      KC_N,    KC_M, KC_COMM,         KC_DOT,  KC_SLSH,   KC_RSFT,
-           KC_LCTL, KC_LGUI, KC_LALT, LT(_MEDIA_AND_NAVIGATION_LAYER, KC_SPC), LALT_T(KC_APP), KC_RGUI, TD(MAIN_TAP_DANCE), KC_RCTL
+           KC_LCTL, KC_LGUI, KC_LALT, LT(_MEDIA_AND_NAVIGATION_LAYER, KC_SPC), LALT_T(KC_APP), KC_RGUI, MO(_FUNCTION_LAYER), KC_RCTL
 ),
   /*
   * Layer _FUNCTION_LAYER
@@ -113,10 +118,10 @@ TD(MAIN_TAP_DANCE),    KC_A,    KC_S,  KC_D,  KC_F,  KC_G,      KC_H,    KC_J,  
   *
   */
  [_MEDIA_AND_NAVIGATION_LAYER] = KEYMAP( /* Base */
-    KC_AP2_USB, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, _______, _______, _______, _______,  KC_AP_LED_ON, KC_AP_LED_OFF, _______, _______, KC_AP2_BT_UNPAIR,
-       _______,    _______,    _______,      KC_UP,    _______, _______, KC_MUTE, KC_MPRV, KC_MPLY,       KC_MNXT,       _______, KC_BRID, KC_BRIU, _______,
-       _______,    _______,    KC_LEFT,    KC_DOWN,    KC_RGHT, _______, KC_HOME, KC_PGDN, KC_PGUP,        KC_END,       _______, _______, _______,
-       _______,    _______,    _______,    _______,    _______, _______, KC_VOLD, KC_VOLU, _______,       _______,       _______, _______,
+    KC_AP2_USB, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, _______, _______, _______, NEXT_PROFILE,  KC_AP_LED_ON, KC_AP_LED_OFF, _______, _______, KC_AP2_BT_UNPAIR,
+       _______,    _______,    _______,      KC_UP,    _______, _______, KC_MUTE, KC_MPRV,      KC_MPLY,       KC_MNXT,       _______, KC_BRID, KC_BRIU, _______,
+       _______,    _______,    KC_LEFT,    KC_DOWN,    KC_RGHT, _______, KC_HOME, KC_PGDN,      KC_PGUP,        KC_END,       _______, _______, _______,
+       _______,    _______,    _______,    _______,    _______, _______, KC_VOLD, KC_VOLU,      _______,       _______,       _______, _______,
        _______,    _______,    _______,    _______,    _______, _______, _______, _______
  ),
   /*
@@ -187,21 +192,52 @@ void main_layer_reset(qk_tap_dance_state_t *state, void *user_data);
 
 bool is_caps_set = false;
 bool is_mouse_layer_set = false;
+uint8_t current_profile = TRANSPARENT;
+uint8_t base_profile = TRANSPARENT;
+uint8_t caps_profile = RED;
+uint8_t mouse_profile = BLUE;
+uint8_t function_profile = GREEN;
+uint8_t numpad_profile = GOLDEN;
+uint8_t navigation_profile = WHITE;
 
 // The function to handle the caps lock logic
 bool led_update_user(led_t leds) {
   if (leds.caps_lock) {
     is_caps_set = true;
-    enableProfileColor(RED);
-  } else {
+    enableProfileColor(caps_profile);
+    return true;
+  } else if(is_caps_set) {
     is_caps_set = false;
     resetProfileColor();
   }
+
   return true;
 }
+
 layer_state_t layer_state_set_user(layer_state_t layer) {
+
+    if(layer_state_cmp(layer, _FUNCTION_LAYER)) {
+      enableProfileColor(function_profile);
+    } else if(layer_state_cmp(layer, _NUMPAD_LAYER)) {
+      enableProfileColor(numpad_profile);
+    } else if(layer_state_cmp(layer, _MOUSE_LAYER)) {
+      enableProfileColor(mouse_profile);
+    } else if(layer_state_cmp(layer, _MEDIA_AND_NAVIGATION_LAYER)) {
+      enableProfileColor(navigation_profile);
+    } else {
+      resetProfileColor();
+    }
+
     return layer;
 }
+
+// layer_state_t layer_state_reset_user(layer_state_t layer) {
+    // jif(!layer_state_is(_FUNCTION_LAYER) && !layer_state_is(_NUMPAD_LAYER) && !layer_state_is(_MOUSE_LAYER) && !layer_state_is(_MEDIA_AND_NAVIGATION_LAYER)) {
+      // jresetProfileColor();
+    // j}
+// j
+    // jreturn layer;
+// j}
 
 // Determine the current tap dance state
 uint8_t cur_dance(qk_tap_dance_state_t *state) {
@@ -221,20 +257,60 @@ static tap main_tap_state = {
 };
 
 void enableProfileColor (uint8_t profile) {
+  if(current_profile == profile)
+    return;
+
   if(is_caps_set) {
-    annepro2LedSetProfile(RED);
+    if(current_profile == caps_profile)
+      return;
+
+    current_profile = caps_profile;
   } else {
-    annepro2LedSetProfile(profile);
+    current_profile = profile;
   }
+  annepro2LedSetProfile(current_profile);
 }
 
 void resetProfileColor(void) {
+  if(current_profile == base_profile)
+    return;
+
   if(is_caps_set) {
-    annepro2LedSetProfile(RED);
-  } else if(is_mouse_layer_set) {
-    annepro2LedSetProfile(BLUE);
+    current_profile = caps_profile;
+  } else if(IS_LAYER_ON(_MOUSE_LAYER)) {
+    current_profile = mouse_profile;
   } else {
-    annepro2LedSetProfile(TRANSPARENT);
+    current_profile = base_profile;
+  }
+  annepro2LedSetProfile(current_profile);
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    //case NEXT_PROFILE:
+      //if (record->event.pressed) {
+        //if(current_profile >= TRANSPARENT)
+          //current_profile = RED;
+        //else
+          //current_profile++;
+      //}
+      //return false;
+    //case LT(_MEDIA_AND_NAVIGATION_LAYER, KC_SPC):
+      //if (record -> event.pressed) {
+        //enableProfileColor(navigation_profile);
+      //} else {
+        //resetProfileColor();
+      //}
+      //return true;
+    //case MO(_FUNCTION_LAYER):
+      //if (record -> event.pressed) {
+        //enableProfileColor(function_profile);
+      //} else {
+        //resetProfileColor();
+      //}
+      //return true;
+    default:
+      return true;
   }
 }
 
@@ -248,25 +324,20 @@ void main_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
       break;
     case SINGLE_HOLD:
       layer_on(_FUNCTION_LAYER);
-      enableProfileColor(GREEN);
       break;
     case DOUBLE_TAP:
       // Check to see if the layer is already set
       if (layer_state_is(_MOUSE_LAYER)) {
         // If already set, then switch it off
         layer_off(_MOUSE_LAYER);
-        is_mouse_layer_set = false;
         resetProfileColor();
       } else {
         // If not already set, then switch the layer on
         layer_on(_MOUSE_LAYER);
-        is_mouse_layer_set = true;
-        enableProfileColor(BLUE);
       }
       break;
     case DOUBLE_HOLD:
       layer_on(_NUMPAD_LAYER);
-      enableProfileColor(GOLDEN);
       break;
   }
 }
@@ -275,11 +346,9 @@ void main_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
   // If the key was held down and now is released then switch off the layer
   if (main_tap_state.state == SINGLE_HOLD) {
     layer_off(_FUNCTION_LAYER);
-    resetProfileColor();
   }
   if (main_tap_state.state == DOUBLE_HOLD) {
     layer_off(_NUMPAD_LAYER);
-    resetProfileColor();
   }
   main_tap_state.state = 0;
 }
