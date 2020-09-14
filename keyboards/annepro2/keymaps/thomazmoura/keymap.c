@@ -24,7 +24,7 @@ enum {
     DOUBLE_HOLD
 };
 
-enum {
+enum profile {
   RED,
   GREEN,
   BLUE,
@@ -39,8 +39,16 @@ enum {
   TRANSPARENT
 };
 
+uint8_t cyclabe_profiles[] = {
+  TRANSPARENT,
+  ANIMATEDSPECTRUM,
+  ANIMATEDBREATHING,
+  ANIMATEDRAINBOWWATERFALL,
+  ANIMATEDRAINBOWVERTICAL
+};
+
 enum custom_codes {
-  NEXT_PROFILE = SAFE_RANGE,
+  NEXT_PROFILE = AP2_SAFE_RANGE + 10, //turns aout the AP2_SAFE_RANGE isn't that safe...
   ENABLE_OR_DISABLE_LEDS,
 };
 
@@ -118,10 +126,10 @@ TD(MAIN_TAP_DANCE),    KC_A,    KC_S,  KC_D,  KC_F,  KC_G,      KC_H,    KC_J,  
   *
   */
  [_MEDIA_AND_NAVIGATION_LAYER] = KEYMAP( /* Base */
-    KC_AP2_USB, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, _______, _______, _______, NEXT_PROFILE,  KC_AP_LED_ON, KC_AP_LED_OFF, _______, _______, KC_AP2_BT_UNPAIR,
-       _______,    _______,    _______,      KC_UP,    _______, _______, KC_MUTE, KC_MPRV,      KC_MPLY,       KC_MNXT,       _______, KC_BRID, KC_BRIU, _______,
-       _______,    _______,    KC_LEFT,    KC_DOWN,    KC_RGHT, _______, KC_HOME, KC_PGDN,      KC_PGUP,        KC_END,       _______, _______, _______,
-       _______,    _______,    _______,    _______,    _______, _______, KC_VOLD, KC_VOLU,      _______,       _______,       _______, _______,
+    KC_AP2_USB, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, _______, _______, _______, _______,  NEXT_PROFILE, ENABLE_OR_DISABLE_LEDS, _______, _______, KC_AP2_BT_UNPAIR,
+       _______,    _______,    _______,      KC_UP,    _______, _______, KC_MUTE, KC_MPRV, KC_MPLY,       KC_MNXT,                _______, KC_BRID, KC_BRIU, _______,
+       _______,    _______,    KC_LEFT,    KC_DOWN,    KC_RGHT, _______, KC_HOME, KC_PGDN, KC_PGUP,        KC_END,                _______, _______, _______,
+       _______,    _______,    _______,    _______,    _______, _______, KC_VOLD, KC_VOLU, _______,       _______,                _______, _______,
        _______,    _______,    _______,    _______,    _______, _______, _______, _______
  ),
   /*
@@ -191,9 +199,9 @@ void main_layer_finished(qk_tap_dance_state_t *state, void *user_data);
 void main_layer_reset(qk_tap_dance_state_t *state, void *user_data);
 
 bool is_caps_set = false;
-bool is_mouse_layer_set = false;
+bool is_led_on = false;
+uint8_t base_profile = 0;
 uint8_t current_profile = TRANSPARENT;
-uint8_t base_profile = TRANSPARENT;
 uint8_t caps_profile = RED;
 uint8_t mouse_profile = BLUE;
 uint8_t function_profile = GREEN;
@@ -272,7 +280,7 @@ void enableProfileColor (uint8_t profile) {
 }
 
 void resetProfileColor(void) {
-  if(current_profile == base_profile)
+  if(current_profile == cyclabe_profiles[base_profile])
     return;
 
   if(is_caps_set) {
@@ -280,7 +288,7 @@ void resetProfileColor(void) {
   } else if(IS_LAYER_ON(_MOUSE_LAYER)) {
     current_profile = mouse_profile;
   } else {
-    current_profile = base_profile;
+    current_profile = cyclabe_profiles[base_profile];
   }
   annepro2LedSetProfile(current_profile);
 }
@@ -288,22 +296,24 @@ void resetProfileColor(void) {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case NEXT_PROFILE:
-      base_profile = ANIMATEDSPECTRUM;
-      return false;
-    //case LT(_MEDIA_AND_NAVIGATION_LAYER, KC_SPC):
-      //if (record -> event.pressed) {
-        //enableProfileColor(navigation_profile);
-      //} else {
-        //resetProfileColor();
-      //}
-      //return true;
-    //case MO(_FUNCTION_LAYER):
-      //if (record -> event.pressed) {
-        //enableProfileColor(function_profile);
-      //} else {
-        //resetProfileColor();
-      //}
-      //return true;
+      if (record->event.pressed) {
+        base_profile++;
+        if(base_profile >= (sizeof(cyclabe_profiles)/sizeof(cyclabe_profiles[0])))
+          base_profile = 0;
+        resetProfileColor();
+      }
+      return true;
+    case ENABLE_OR_DISABLE_LEDS:
+      if (record->event.pressed) {
+        if(is_led_on) {
+          is_led_on = false;
+          annepro2LedDisable();
+        } else {
+          annepro2LedEnable();
+          is_led_on = true;
+        }
+      }
+      return true;
     default:
       return true;
   }
