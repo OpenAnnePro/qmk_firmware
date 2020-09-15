@@ -4,11 +4,11 @@
 #include "config.h"
 
 enum anne_pro_layers {
-  _BASE_LAYER,
-  _MOUSE_LAYER,
-  _FUNCTION_LAYER,
-  _MEDIA_AND_NAVIGATION_LAYER,
-  _NUMPAD_LAYER,
+  _BASE_LAYER = 0,
+  _MOUSE_LAYER = 1,
+  _FUNCTION_LAYER = 2,
+  _MEDIA_AND_NAVIGATION_LAYER = 4,
+  _NUMPAD_LAYER = 8,
 };
 
 typedef struct {
@@ -199,7 +199,7 @@ void main_layer_finished(qk_tap_dance_state_t *state, void *user_data);
 void main_layer_reset(qk_tap_dance_state_t *state, void *user_data);
 
 bool is_caps_set = false;
-bool is_led_on = false;
+bool is_led_on = true;
 uint8_t base_profile = 0;
 uint8_t current_profile = TRANSPARENT;
 uint8_t caps_profile = RED;
@@ -222,30 +222,32 @@ bool led_update_user(led_t leds) {
   return true;
 }
 
-layer_state_t layer_state_set_user(layer_state_t layer) {
-
-    if(layer_state_cmp(layer, _FUNCTION_LAYER)) {
+layer_state_t layer_state_set_user(layer_state_t state) {
+  switch(get_highest_layer(state)) {
+    case _FUNCTION_LAYER:
       enableProfileColor(function_profile);
-    } else if(layer_state_cmp(layer, _NUMPAD_LAYER)) {
+      break;
+    case _NUMPAD_LAYER:
       enableProfileColor(numpad_profile);
-    } else if(layer_state_cmp(layer, _MOUSE_LAYER)) {
+      break;
+    case _MOUSE_LAYER:
       enableProfileColor(mouse_profile);
-    } else if(layer_state_cmp(layer, _MEDIA_AND_NAVIGATION_LAYER)) {
+      break;
+    case _MEDIA_AND_NAVIGATION_LAYER:
       enableProfileColor(navigation_profile);
-    } else {
+      break;
+    default:
       resetProfileColor();
-    }
+      break;
+  }
 
-    return layer;
+  return state;
 }
 
-// layer_state_t layer_state_reset_user(layer_state_t layer) {
-    // jif(!layer_state_is(_FUNCTION_LAYER) && !layer_state_is(_NUMPAD_LAYER) && !layer_state_is(_MOUSE_LAYER) && !layer_state_is(_MEDIA_AND_NAVIGATION_LAYER)) {
-      // jresetProfileColor();
-    // j}
-// j
-    // jreturn layer;
-// j}
+void keyboard_post_init_user(void) {
+  annepro2LedEnable();
+  annepro2LedSetProfile(base_profile);
+}
 
 // Determine the current tap dance state
 uint8_t cur_dance(qk_tap_dance_state_t *state) {
@@ -335,6 +337,7 @@ void main_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
       if (layer_state_is(_MOUSE_LAYER)) {
         // If already set, then switch it off
         layer_off(_MOUSE_LAYER);
+        //HACK: still haven't managed to turn the lights off on layer off any other way
         resetProfileColor();
       } else {
         // If not already set, then switch the layer on
