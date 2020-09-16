@@ -362,6 +362,6 @@ void main_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
 
 // Associate our tap dance key with its functionality
 qk_tap_dance_action_t tap_dance_actions[] = {
-  [MAIN_TAP_DANCE] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, main_layer_finished, main_layer_reset, 225)
+  [MAIN_TAP_DANCE] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, main_layer_finished, main_layer_reset, 250)
 };
 
