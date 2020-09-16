@@ -25,6 +25,7 @@ enum {
 };
 
 enum profile {
+  TRANSPARENT,
   RED,
   GREEN,
   BLUE,
@@ -36,7 +37,6 @@ enum profile {
   ANIMATEDSPECTRUM,
   WHITE,
   GOLDEN,
-  TRANSPARENT
 };
 
 uint8_t cyclabe_profiles[] = {
@@ -246,7 +246,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 void keyboard_post_init_user(void) {
   annepro2LedEnable();
-  annepro2LedSetProfile(base_profile);
 }
 
 // Determine the current tap dance state
