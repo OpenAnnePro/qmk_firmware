@@ -53,7 +53,8 @@ enum custom_codes {
 };
 
 enum {
-    MAIN_TAP_DANCE, // Our custom tap dance key; add any other tap dance keys to this enum 
+    ESC_TAP_DANCE,
+    GRV_TAP_DANCE,
 };
 
 /*
@@ -82,9 +83,9 @@ enum {
 */
  const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  [_BASE_LAYER] = KEYMAP( /* Base */
-            KC_GRV,    KC_1,    KC_2,  KC_3,  KC_4,  KC_5,      KC_6,    KC_7,    KC_8,           KC_9,     KC_0,   KC_MINS,  KC_EQL, KC_BSPC,
+ TD(GRV_TAP_DANCE),    KC_1,    KC_2,  KC_3,  KC_4,  KC_5,      KC_6,    KC_7,    KC_8,           KC_9,     KC_0,   KC_MINS,  KC_EQL, KC_BSPC,
             KC_TAB,    KC_Q,    KC_W,  KC_E,  KC_R,  KC_T,      KC_Y,    KC_U,    KC_I,           KC_O,     KC_P,   KC_LBRC, KC_RBRC, KC_BSLS,
-TD(MAIN_TAP_DANCE),    KC_A,    KC_S,  KC_D,  KC_F,  KC_G,      KC_H,    KC_J,    KC_K,           KC_L,  KC_SCLN,   KC_QUOT,  KC_ENT,
+ TD(ESC_TAP_DANCE),    KC_A,    KC_S,  KC_D,  KC_F,  KC_G,      KC_H,    KC_J,    KC_K,           KC_L,  KC_SCLN,   KC_QUOT,  KC_ENT,
            KC_LSFT,    KC_Z,    KC_X,  KC_C,  KC_V,  KC_B,      KC_N,    KC_M, KC_COMM,         KC_DOT,  KC_SLSH,   KC_RSFT,
            KC_LCTL, KC_LGUI, KC_LALT, LT(_MEDIA_AND_NAVIGATION_LAYER, KC_SPC), LALT_T(KC_APP), KC_RGUI, MO(_FUNCTION_LAYER), KC_RCTL
 ),
@@ -105,21 +106,21 @@ TD(MAIN_TAP_DANCE),    KC_A,    KC_S,  KC_D,  KC_F,  KC_G,      KC_H,    KC_J,  
   */
  [_FUNCTION_LAYER] = KEYMAP( /* Base */
     KC_CAPS,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,  KC_F12,  KC_DEL,
-    KC_PSCR, _______,    KC_7,    KC_8,    KC_9, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    _______,    KC_0,    KC_4,    KC_5,    KC_6, _______, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, _______, _______, _______,
-    _______, _______,    KC_1,    KC_2,    KC_3, _______, _______, _______, _______, _______, _______, _______,
+    KC_PSCR, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______
 ),
   /*
   * Layer _MEDIA_AND_NAVIGATION_LAYER
   * ,-----------------------------------------------------------------------------------------.
-  * | USB | BT1 | BT2 | BT3 | BT4 |     |     |     |LEDOF|LEDON|     |     |     |           |
+  * | USB | BT1 | BT2 | BT3 | BT4 |     |     |     |LEDCH|LEDON|     |     |     |           |
   * |-----------------------------------------------------------------------------------------+
-  * |        |     |     | UP  |     |     | MUTE| PREV| PLAY| NEXT|     |     |     |        |
+  * |        |     |     |     |     |     | MUTE| PREV| PLAY| NEXT|     |     |     |        |
   * |-----------------------------------------------------------------------------------------+
-  * |         |     | LFT | DWN | RGT |     | HOME|PGDWN| PGUP| END |     |     |             |
+  * |         |     |     |     |     |     | HOME|PGDWN| PGUP| END |     |     |             |
   * |-----------------------------------------------------------------------------------------+
-  * |            |     |     |     |     |     |VOLDN|VOLUP|     |     |     |                |
+  * |            |     |     |     |     |     |     |     |VOLDN|VOLUP|     |                |
   * |-----------------------------------------------------------------------------------------+
   * |       |       |       |                                 |       |       |       |       |
   * \-----------------------------------------------------------------------------------------/
@@ -129,7 +130,7 @@ TD(MAIN_TAP_DANCE),    KC_A,    KC_S,  KC_D,  KC_F,  KC_G,      KC_H,    KC_J,  
     KC_AP2_USB, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, _______, _______, _______, _______,  NEXT_PROFILE, ENABLE_OR_DISABLE_LEDS, _______, _______, KC_AP2_BT_UNPAIR,
        _______,    _______,    _______,      KC_UP,    _______, _______, KC_MUTE, KC_MPRV, KC_MPLY,       KC_MNXT,                _______, KC_BRID, KC_BRIU, _______,
        _______,    _______,    KC_LEFT,    KC_DOWN,    KC_RGHT, _______, KC_HOME, KC_PGDN, KC_PGUP,        KC_END,                _______, _______, _______,
-       _______,    _______,    _______,    _______,    _______, _______, KC_VOLD, KC_VOLU, _______,       _______,                _______, _______,
+       _______,    _______,    _______,    _______,    _______, _______, _______, _______, KC_VOLD,       KC_VOLU,                _______, _______,
        _______,    _______,    _______,    _______,    _______, _______, _______, _______
  ),
   /*
@@ -195,8 +196,8 @@ uint8_t cur_dance(qk_tap_dance_state_t *state);
 // Functions associated with individual tap dances
 void enableProfileColor(uint8_t profile);
 void resetProfileColor(void);
-void main_layer_finished(qk_tap_dance_state_t *state, void *user_data);
-void main_layer_reset(qk_tap_dance_state_t *state, void *user_data);
+void esc_layer_finished(qk_tap_dance_state_t *state, void *user_data);
+void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data);
 
 bool is_caps_set = false;
 bool is_led_on = true;
@@ -260,7 +261,12 @@ uint8_t cur_dance(qk_tap_dance_state_t *state) {
 }
 
 // Initialize tap structure associated with example tap dance key
-static tap main_tap_state = {
+static tap esc_tap_state = {
+  .is_press_action = true,
+  .state = 0
+};
+
+static tap grav_tap_state = {
   .is_press_action = true,
   .state = 0
 };
@@ -321,15 +327,47 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 // Functions that control what our tap dance key does
-void main_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
-  main_tap_state.state = cur_dance(state);
+void esc_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
+  esc_tap_state.state = cur_dance(state);
 
-  switch (main_tap_state.state) {
+  switch (esc_tap_state.state) {
     case SINGLE_TAP:
       tap_code(KC_ESC);
       break;
     case SINGLE_HOLD:
       layer_on(_FUNCTION_LAYER);
+      break;
+    case DOUBLE_TAP:
+      tap_code(KC_ESC);
+      tap_code(KC_ESC);
+      break;
+    case DOUBLE_HOLD:
+      layer_on(_NUMPAD_LAYER);
+      break;
+  }
+}
+
+void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
+  // If the key was held down and now is released then switch off the layer
+  if (esc_tap_state.state == SINGLE_HOLD) {
+    layer_off(_FUNCTION_LAYER);
+  }
+  if (esc_tap_state.state == DOUBLE_HOLD) {
+    layer_off(_NUMPAD_LAYER);
+  }
+  esc_tap_state.state = 0;
+}
+
+// Functions that control what our tap dance key does
+void grave_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
+  grav_tap_state.state = cur_dance(state);
+
+  switch (grav_tap_state.state) {
+    case SINGLE_TAP:
+      tap_code(KC_GRV);
+      break;
+    case SINGLE_HOLD:
+      tap_code(KC_GRV);
       break;
     case DOUBLE_TAP:
       // Check to see if the layer is already set
@@ -343,25 +381,23 @@ void main_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
         layer_on(_MOUSE_LAYER);
       }
       break;
-    case DOUBLE_HOLD:
-      layer_on(_NUMPAD_LAYER);
-      break;
   }
 }
 
-void main_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
+void grave_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
   // If the key was held down and now is released then switch off the layer
-  if (main_tap_state.state == SINGLE_HOLD) {
+  if (grav_tap_state.state == SINGLE_HOLD) {
     layer_off(_FUNCTION_LAYER);
   }
-  if (main_tap_state.state == DOUBLE_HOLD) {
+  if (grav_tap_state.state == DOUBLE_HOLD) {
     layer_off(_NUMPAD_LAYER);
   }
-  main_tap_state.state = 0;
+  grav_tap_state.state = 0;
 }
 
 // Associate our tap dance key with its functionality
 qk_tap_dance_action_t tap_dance_actions[] = {
-  [MAIN_TAP_DANCE] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, main_layer_finished, main_layer_reset, 250)
+  [ESC_TAP_DANCE] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, esc_layer_finished, esc_layer_reset, 250),
+  [GRV_TAP_DANCE] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, grave_layer_finished, grave_layer_reset, 250)
 };
 
