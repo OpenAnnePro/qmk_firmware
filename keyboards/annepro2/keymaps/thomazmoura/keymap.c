@@ -4,11 +4,11 @@
 #include "config.h"
 
 enum anne_pro_layers {
-  _BASE_LAYER = 0,
-  _MOUSE_LAYER = 1,
-  _FUNCTION_LAYER = 2,
-  _MEDIA_AND_NAVIGATION_LAYER = 4,
-  _NUMPAD_LAYER = 8,
+  _BASE_LAYER,
+  _MOUSE_LAYER,
+  _FUNCTION_LAYER,
+  _MEDIA_AND_NAVIGATION_LAYER,
+  _NUMPAD_LAYER,
 };
 
 typedef struct {
@@ -21,7 +21,9 @@ enum {
     SINGLE_TAP = 1,
     SINGLE_HOLD,
     DOUBLE_TAP,
-    DOUBLE_HOLD
+    DOUBLE_HOLD,
+    TRIPLE_TAP,
+    TRIPLE_HOLD
 };
 
 enum profile {
@@ -149,7 +151,7 @@ enum {
   *
   */
  [_NUMPAD_LAYER] = KEYMAP( /* Base */
-    KC_NLCK, _______, _______, _______, _______, _______, _______, _______, KC_PAST, _______, KC_PSLS, KC_PMNS, KC_PPLS, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, KC_PAST, _______, KC_PSLS, KC_PMNS, KC_PPLS, _______,
     _______, _______, _______, _______, _______, _______, _______,    KC_7,    KC_8,    KC_9, KC_COMM, _______, _______, _______,
     _______, _______, _______, _______, _______, _______,    KC_0,    KC_4,    KC_5,    KC_6, KC_PDOT, _______, _______,
     _______, _______, _______, _______, _______, _______, _______,    KC_1,    KC_2,    KC_3, _______, _______,
@@ -257,6 +259,9 @@ uint8_t cur_dance(qk_tap_dance_state_t *state) {
   } else if (state->count == 2) {
     if (!state->pressed) return DOUBLE_TAP;
     else return DOUBLE_HOLD;
+  } else if (state->count == 3) {
+    if (!state->pressed) return TRIPLE_TAP;
+    else return TRIPLE_HOLD;
   }  else return 8;
 }
 
@@ -276,9 +281,6 @@ void enableProfileColor (uint8_t profile) {
     return;
 
   if(is_caps_set) {
-    if(current_profile == caps_profile)
-      return;
-
     current_profile = caps_profile;
   } else {
     current_profile = profile;
@@ -287,13 +289,8 @@ void enableProfileColor (uint8_t profile) {
 }
 
 void resetProfileColor(void) {
-  if(current_profile == cyclabe_profiles[base_profile])
-    return;
-
   if(is_caps_set) {
     current_profile = caps_profile;
-  } else if(IS_LAYER_ON(_MOUSE_LAYER)) {
-    current_profile = mouse_profile;
   } else {
     current_profile = cyclabe_profiles[base_profile];
   }
@@ -338,11 +335,26 @@ void esc_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
       layer_on(_FUNCTION_LAYER);
       break;
     case DOUBLE_TAP:
-      tap_code(KC_ESC);
-      tap_code(KC_ESC);
+      if (layer_state_is(_MOUSE_LAYER) || layer_state_is(_NUMPAD_LAYER)) {
+        layer_off(_MOUSE_LAYER);
+        layer_off(_NUMPAD_LAYER);
+      } else {
+        tap_code(KC_ESC);
+        tap_code(KC_ESC);
+      }
       break;
     case DOUBLE_HOLD:
       layer_on(_NUMPAD_LAYER);
+      break;
+    case TRIPLE_TAP:
+      if (layer_state_is(_NUMPAD_LAYER)) {
+        layer_off(_NUMPAD_LAYER);
+      } else {
+        layer_on(_NUMPAD_LAYER);
+      }
+      break;
+    case TRIPLE_HOLD:
+      layer_on(_MOUSE_LAYER);
       break;
   }
 }
@@ -354,6 +366,9 @@ void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
   }
   if (esc_tap_state.state == DOUBLE_HOLD) {
     layer_off(_NUMPAD_LAYER);
+  }
+  if (esc_tap_state.state == TRIPLE_HOLD) {
+    layer_off(_MOUSE_LAYER);
   }
   esc_tap_state.state = 0;
 }
@@ -374,8 +389,6 @@ void grave_layer_finished(qk_tap_dance_state_t *state, void *user_data) {
       if (layer_state_is(_MOUSE_LAYER)) {
         // If already set, then switch it off
         layer_off(_MOUSE_LAYER);
-        //HACK: still haven't managed to turn the lights off on layer off any other way
-        resetProfileColor();
       } else {
         // If not already set, then switch the layer on
         layer_on(_MOUSE_LAYER);
@@ -398,6 +411,6 @@ void grave_layer_reset(qk_tap_dance_state_t *state, void *user_data) {
 // Associate our tap dance key with its functionality
 qk_tap_dance_action_t tap_dance_actions[] = {
   [ESC_TAP_DANCE] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, esc_layer_finished, esc_layer_reset, 250),
-  [GRV_TAP_DANCE] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, grave_layer_finished, grave_layer_reset, 250)
+  [GRV_TAP_DANCE] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, grave_layer_finished, grave_layer_reset, 300)
 };
 
