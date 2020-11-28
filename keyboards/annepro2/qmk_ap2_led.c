@@ -80,3 +80,9 @@ void annepro2LedClearMask(uint8_t key)
   sdPut(&SD0, CMD_LED_CLEAR_MASK);
   sdPut(&SD0, key);
 }
+
+void annepro2LedSetForeColor(uint32_t color)
+{
+  sdPut(&SD0, CMD_LED_SET_FORECOLOR);
+  sdPut(&SD0, color);
+}

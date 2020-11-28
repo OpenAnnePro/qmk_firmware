@@ -13,6 +13,7 @@
 #define CMD_LED_CLEAR_MASK                  0xB
 #define CMD_LED_NEXT_INTENSITY              0xC
 #define CMD_LED_NEXT_ANIMATION_SPEED        0xD
+#define CMD_LED_SET_FORECOLOR               0xE
 
 void annepro2LedDisable(void);
 void annepro2LedEnable(void);
@@ -27,3 +28,4 @@ void annepro2LedSetMask(uint8_t key);
 void annepro2LedClearMask(uint8_t key);
 void annepro2LedNextIntensity(void);
 void annepro2LedNextAnimationSpeed(void);
+void annepro2LedSetForeColor(uint32_t color);
