@@ -28,4 +28,4 @@ void annepro2LedSetMask(uint8_t key);
 void annepro2LedClearMask(uint8_t key);
 void annepro2LedNextIntensity(void);
 void annepro2LedNextAnimationSpeed(void);
-void annepro2LedSetForeColor(uint32_t color);
+void annepro2LedSetForeColor(uint8_t red, uint8_t green, uint8_t blue);

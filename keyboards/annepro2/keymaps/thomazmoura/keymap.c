@@ -27,7 +27,6 @@ enum {
 };
 
 enum profile {
-  TRANSPARENT,
   RED,
   GREEN,
   BLUE,
@@ -37,26 +36,21 @@ enum profile {
   ANIMATEDRAINBOWFLOW,
   ANIMATEDRAINBOWWATERFALL,
   ANIMATEDBREATHING,
-  ANIMATEDSPECTRUM,
-  WHITE,
-  GOLDEN
+  ANIMATEDSPECTRUM
 };
 
 uint8_t cyclabe_profiles[] = {
-  TRANSPARENT,
-  ANIMATEDSPECTRUM,
-  ANIMATEDBREATHING,
-  ANIMATEDRAINBOWWATERFALL,
+  IDLE_PROFILE,
+  ANIMATEDRAINBOWFLOW,
   ANIMATEDRAINBOWVERTICAL,
-  ANIMATEDRAINBOWFLOW
+  ANIMATEDRAINBOWWATERFALL,
+  ANIMATEDBREATHING,
+  ANIMATEDSPECTRUM
 };
 
 enum custom_codes {
-  NEXT_PROFILE = AP2_SAFE_RANGE + 10, //turns aout the AP2_SAFE_RANGE isn't that safe...
-  ENABLE_OR_DISABLE_LEDS,
-  TURN_RED,
-  TURN_GREEN,
-  TURN_BLUE
+  NEXT_PROFILE = AP2_SAFE_RANGE,
+  ENABLE_OR_DISABLE_LEDS
 };
 
 enum {
@@ -156,7 +150,7 @@ enum {
   *
   */
  [_NUMPAD_LAYER] = KEYMAP( /* Base */
-    _______, TURN_RED, TURN_GREEN, TURN_BLUE, _______, _______, _______, _______, KC_PAST, _______, KC_PSLS, KC_PMNS, KC_PPLS, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, KC_PAST, _______, KC_PSLS, KC_PMNS, KC_PPLS, _______,
     _______, _______, _______, _______, _______, _______, _______,    KC_7,    KC_8,    KC_9, KC_COMM, _______, _______, _______,
     _______, _______, _______, _______, _______, _______,    KC_0,    KC_4,    KC_5,    KC_6, KC_PDOT, _______, _______,
     _______, _______, _______, _______, _______, _______, _______,    KC_1,    KC_2,    KC_3, _______, _______,
@@ -201,7 +195,7 @@ void matrix_scan_user(void) {
 uint8_t cur_dance(qk_tap_dance_state_t *state);
 
 // Functions associated with individual tap dances
-void enableProfileColor(uint8_t profile);
+void enableProfileColor(uint8_t * profile);
 void resetProfileColor(void);
 void esc_layer_finished(qk_tap_dance_state_t *state, void *user_data);
 void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data);
@@ -209,12 +203,13 @@ void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data);
 bool is_caps_set = false;
 bool is_led_on = true;
 uint8_t base_profile = 0;
-uint8_t current_profile = TRANSPARENT;
-uint8_t caps_profile = RED;
-uint8_t mouse_profile = BLUE;
-uint8_t function_profile = GREEN;
-uint8_t numpad_profile = GOLDEN;
-uint8_t navigation_profile = WHITE;
+
+uint8_t caps_profile[] = {0xFF,0x00,0x00};
+uint8_t idle_profile[] = {0x00,0x00,0x00};
+uint8_t mouse_profile[] = {0x00,0x00,0xFF};
+uint8_t function_profile[] = {0x00,0xFF,0x00};
+uint8_t numpad_profile[] = {0xFF,0xFF,0x00};
+uint8_t navigation_profile[] = {0xFF,0xFF,0xFF};
 
 // The function to handle the caps lock logic
 bool led_update_user(led_t leds) {
@@ -281,25 +276,22 @@ static tap grav_tap_state = {
   .state = 0
 };
 
-void enableProfileColor (uint8_t profile) {
-  if(current_profile == profile)
-    return;
-
+void enableProfileColor (uint8_t * profile) {
   if(is_caps_set) {
-    current_profile = caps_profile;
+    annepro2LedSetForeColor(caps_profile[0], caps_profile[1], caps_profile[2]);
   } else {
-    current_profile = profile;
+    annepro2LedSetForeColor(profile[0], profile[1], profile[2]);
   }
-  annepro2LedSetProfile(current_profile);
 }
 
 void resetProfileColor(void) {
   if(is_caps_set) {
-    current_profile = caps_profile;
+    annepro2LedSetForeColor(caps_profile[0], caps_profile[1], caps_profile[2]);
+  } else if(base_profile == IDLE_PROFILE) {
+    annepro2LedSetForeColor(idle_profile[0], idle_profile[1], idle_profile[2]);
   } else {
-    current_profile = cyclabe_profiles[base_profile];
-  }
-  annepro2LedSetProfile(current_profile);
+    annepro2LedResetForeColor();
+  } 
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -308,8 +300,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         base_profile++;
         if(base_profile >= (sizeof(cyclabe_profiles)/sizeof(cyclabe_profiles[0])))
-          base_profile = 0;
-        resetProfileColor();
+          base_profile = IDLE_PROFILE;
+
+        if(base_profile == IDLE_PROFILE) {
+          annepro2LedSetForeColor(idle_profile[0], idle_profile[1], idle_profile[2]);
+        } else {
+          annepro2LedSetProfile(cyclabe_profiles[base_profile]);
+        }
       }
       return true;
     case ENABLE_OR_DISABLE_LEDS:
@@ -321,21 +318,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           annepro2LedEnable();
           is_led_on = true;
         }
-      }
-      return true;
-    case TURN_RED:
-      if (record->event.pressed) {
-        annepro2LedSetForeColor(0xFF0000);
-      }
-      return true;
-    case TURN_GREEN:
-      if (record->event.pressed) {
-        annepro2LedSetForeColor(0x00FF00);
-      }
-      return true;
-    case TURN_BLUE:
-      if (record->event.pressed) {
-        annepro2LedSetForeColor(0x0000FF);
       }
       return true;
     default:

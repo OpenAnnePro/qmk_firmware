@@ -12,3 +12,4 @@
 
 #define CAPS_LOCATION (MATRIX_COLS * 0 + 0)
 
+#define IDLE_PROFILE 0
