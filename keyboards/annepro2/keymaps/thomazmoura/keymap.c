@@ -54,6 +54,9 @@ uint8_t cyclabe_profiles[] = {
 enum custom_codes {
   NEXT_PROFILE = AP2_SAFE_RANGE + 10, //turns aout the AP2_SAFE_RANGE isn't that safe...
   ENABLE_OR_DISABLE_LEDS,
+  TURN_RED,
+  TURN_GREEN,
+  TURN_BLUE
 };
 
 enum {
@@ -153,7 +156,7 @@ enum {
   *
   */
  [_NUMPAD_LAYER] = KEYMAP( /* Base */
-    _______, _______, _______, _______, _______, _______, _______, _______, KC_PAST, _______, KC_PSLS, KC_PMNS, KC_PPLS, _______,
+    _______, TURN_RED, TURN_GREEN, TURN_BLUE, _______, _______, _______, _______, KC_PAST, _______, KC_PSLS, KC_PMNS, KC_PPLS, _______,
     _______, _______, _______, _______, _______, _______, _______,    KC_7,    KC_8,    KC_9, KC_COMM, _______, _______, _______,
     _______, _______, _______, _______, _______, _______,    KC_0,    KC_4,    KC_5,    KC_6, KC_PDOT, _______, _______,
     _______, _______, _______, _______, _______, _______, _______,    KC_1,    KC_2,    KC_3, _______, _______,
@@ -318,6 +321,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           annepro2LedEnable();
           is_led_on = true;
         }
+      }
+      return true;
+    case TURN_RED:
+      if (record->event.pressed) {
+        annepro2LedSetForeColor(0xFF0000);
+      }
+      return true;
+    case TURN_GREEN:
+      if (record->event.pressed) {
+        annepro2LedSetForeColor(0x00FF00);
+      }
+      return true;
+    case TURN_BLUE:
+      if (record->event.pressed) {
+        annepro2LedSetForeColor(0x0000FF);
       }
       return true;
     default:
