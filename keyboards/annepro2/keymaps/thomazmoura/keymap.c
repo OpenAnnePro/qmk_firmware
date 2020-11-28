@@ -182,13 +182,6 @@ enum {
 const uint16_t keymaps_size = sizeof(keymaps);
 
 
-void matrix_init_user(void) {
-
-}
-
-void matrix_scan_user(void) {
-}
-
 // Declare the functions to be used with your tap dance key(s)
 
 // Function associated with all tap dances
@@ -202,14 +195,26 @@ void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data);
 
 bool is_caps_set = false;
 bool is_led_on = true;
-uint8_t base_profile = 0;
+uint8_t base_profile = IDLE_PROFILE;
 
-uint8_t caps_profile[] = {0xFF,0x00,0x00};
 uint8_t idle_profile[] = {0x00,0x00,0x00};
-uint8_t mouse_profile[] = {0x00,0x00,0xFF};
+uint8_t caps_profile[] = {0xFF,0x00,0x00};
 uint8_t function_profile[] = {0x00,0xFF,0x00};
-uint8_t numpad_profile[] = {0xFF,0xFF,0x00};
 uint8_t navigation_profile[] = {0xFF,0xFF,0xFF};
+uint8_t numpad_profile[] = {0xFF,0xFF,0x00};
+uint8_t mouse_profile[] = {0x00,0x00,0xFF};
+
+void matrix_init_user(void) {
+
+}
+
+void matrix_scan_user(void) {
+}
+
+void keyboard_post_init_user(void) {
+  annepro2LedEnable();
+  resetProfileColor();
+}
 
 // The function to handle the caps lock logic
 bool led_update_user(led_t leds) {
@@ -245,10 +250,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   }
 
   return state;
-}
-
-void keyboard_post_init_user(void) {
-  annepro2LedEnable();
 }
 
 // Determine the current tap dance state
@@ -290,7 +291,7 @@ void resetProfileColor(void) {
   } else if(base_profile == IDLE_PROFILE) {
     annepro2LedSetForeColor(idle_profile[0], idle_profile[1], idle_profile[2]);
   } else {
-    annepro2LedResetForeColor();
+    annepro2LedSetProfile(cyclabe_profiles[base_profile]);
   } 
 }
 
