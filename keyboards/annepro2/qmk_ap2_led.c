@@ -88,3 +88,8 @@ void annepro2LedSetForeColor(uint8_t red, uint8_t green, uint8_t blue)
   sdWrite(&SD0, (uint8_t *)&colors, sizeof(uint8_t)*3);
 }
 
+void annepro2LedResetForeColor()
+{
+  sdPut(&SD0, CMD_LED_RESET_FORECOLOR);
+}
+
