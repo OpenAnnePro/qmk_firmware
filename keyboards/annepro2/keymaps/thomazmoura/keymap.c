@@ -40,7 +40,7 @@ enum profile {
 };
 
 uint8_t cyclabe_profiles[] = {
-  IDLE_PROFILE,
+  IDLE_PROFILE_INDEX,
   ANIMATEDRAINBOWFLOW,
   ANIMATEDRAINBOWVERTICAL,
   ANIMATEDRAINBOWWATERFALL,
@@ -195,12 +195,12 @@ void esc_layer_reset(qk_tap_dance_state_t *state, void *user_data);
 
 bool is_caps_set = false;
 bool is_led_on = true;
-uint8_t base_profile = IDLE_PROFILE;
+uint8_t base_profile = IDLE_PROFILE_INDEX;
 
 uint8_t idle_profile[] = {0x00,0x00,0x00};
 uint8_t caps_profile[] = {0xFF,0x00,0x00};
 uint8_t function_profile[] = {0x00,0xFF,0x00};
-uint8_t navigation_profile[] = {0x66,0x00,0xFF};
+uint8_t navigation_profile[] = {0x44,0x00,0xFF};
 uint8_t numpad_profile[] = {0xFF,0xDD,0x00};
 uint8_t mouse_profile[] = {0x00,0x88,0xFF};
 
@@ -288,7 +288,7 @@ void enableProfileColor (uint8_t * profile) {
 void resetProfileColor(void) {
   if(is_caps_set) {
     annepro2LedSetForeColor(caps_profile[0], caps_profile[1], caps_profile[2]);
-  } else if(base_profile == IDLE_PROFILE) {
+  } else if(base_profile == IDLE_PROFILE_INDEX) {
     annepro2LedSetForeColor(idle_profile[0], idle_profile[1], idle_profile[2]);
   } else {
     annepro2LedSetProfile(cyclabe_profiles[base_profile]);
@@ -301,9 +301,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         base_profile++;
         if(base_profile >= (sizeof(cyclabe_profiles)/sizeof(cyclabe_profiles[0])))
-          base_profile = IDLE_PROFILE;
+          base_profile = IDLE_PROFILE_INDEX;
 
-        if(base_profile == IDLE_PROFILE) {
+        if(base_profile == IDLE_PROFILE_INDEX) {
           annepro2LedSetForeColor(idle_profile[0], idle_profile[1], idle_profile[2]);
         } else {
           annepro2LedSetProfile(cyclabe_profiles[base_profile]);
