@@ -101,15 +101,15 @@ layer_state_t layer_state_set_user(layer_state_t layer) {
   switch(get_highest_layer(layer)) {
     case _FN1_LAYER:
       // Set the leds to green
-      annepro2LedSetForeColor(0x00, 0xFF, 0x00);
+      annepro2LedSetForegroundColor(0x00, 0xFF, 0x00);
       break;
     case _FN2_LAYER:
       // Set the leds to blue
-      annepro2LedSetForeColor(0x00, 0x00, 0xFF);
+      annepro2LedSetForegroundColor(0x00, 0x00, 0xFF);
       break;
     default:
       // Reset back to the current profile
-      annepro2LedResetForeColor();
+      annepro2LedResetForegroundColor();
       break;
   }
   return layer;
@@ -119,11 +119,11 @@ layer_state_t layer_state_set_user(layer_state_t layer) {
 bool led_update_user(led_t leds) {
   if (leds.caps_lock) {
     // Set the leds to red
-    annepro2LedSetForeColor(0xFF, 0x00, 0x00);
+    annepro2LedSetForegroundColor(0xFF, 0x00, 0x00);
   } else {
     // Reset back to the current profile if there is no layer active
     if(!layer_state_is(_FN1_LAYER) && !layer_state_is(_FN2_LAYER)) {
-      annepro2LedResetForeColor();
+      annepro2LedResetForegroundColor();
     }
   }
 

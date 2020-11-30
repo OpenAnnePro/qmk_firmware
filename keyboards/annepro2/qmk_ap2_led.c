@@ -81,15 +81,15 @@ void annepro2LedClearMask(uint8_t key)
   sdPut(&SD0, key);
 }
 
-void annepro2LedSetForeColor(uint8_t red, uint8_t green, uint8_t blue)
+void annepro2LedSetForegroundColor(uint8_t red, uint8_t green, uint8_t blue)
 {
-  sdPut(&SD0, CMD_LED_SET_FORECOLOR);
+  sdPut(&SD0, CMD_LED_SET_FOREGROUND_COLOR);
   uint8_t colors[3]={red,green,blue};
   sdWrite(&SD0, (uint8_t *)&colors, sizeof(uint8_t)*3);
 }
 
-void annepro2LedResetForeColor()
+void annepro2LedResetForegroundColor()
 {
-  sdPut(&SD0, CMD_LED_RESET_FORECOLOR);
+  sdPut(&SD0, CMD_LED_RESET_FOREGROUND_COLOR);
 }
 

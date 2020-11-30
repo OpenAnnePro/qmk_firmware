@@ -279,17 +279,17 @@ static tap grav_tap_state = {
 
 void enableProfileColor (uint8_t * profile) {
   if(is_caps_set) {
-    annepro2LedSetForeColor(caps_profile[0], caps_profile[1], caps_profile[2]);
+    annepro2LedSetForegroundColor(caps_profile[0], caps_profile[1], caps_profile[2]);
   } else {
-    annepro2LedSetForeColor(profile[0], profile[1], profile[2]);
+    annepro2LedSetForegroundColor(profile[0], profile[1], profile[2]);
   }
 }
 
 void resetProfileColor(void) {
   if(is_caps_set) {
-    annepro2LedSetForeColor(caps_profile[0], caps_profile[1], caps_profile[2]);
+    annepro2LedSetForegroundColor(caps_profile[0], caps_profile[1], caps_profile[2]);
   } else if(base_profile == IDLE_PROFILE_INDEX) {
-    annepro2LedSetForeColor(idle_profile[0], idle_profile[1], idle_profile[2]);
+    annepro2LedSetForegroundColor(idle_profile[0], idle_profile[1], idle_profile[2]);
   } else {
     annepro2LedSetProfile(cyclabe_profiles[base_profile]);
   } 
@@ -304,7 +304,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           base_profile = IDLE_PROFILE_INDEX;
 
         if(base_profile == IDLE_PROFILE_INDEX) {
-          annepro2LedSetForeColor(idle_profile[0], idle_profile[1], idle_profile[2]);
+          annepro2LedSetForegroundColor(idle_profile[0], idle_profile[1], idle_profile[2]);
         } else {
           annepro2LedSetProfile(cyclabe_profiles[base_profile]);
         }
