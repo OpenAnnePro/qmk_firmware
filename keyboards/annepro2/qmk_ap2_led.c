@@ -90,6 +90,7 @@ void annepro2LedSetForegroundColor(uint8_t red, uint8_t green, uint8_t blue)
 
 void annepro2LedResetForegroundColor()
 {
-  sdPut(&SD0, CMD_LED_RESET_FOREGROUND_COLOR);
+  uint8_t currentProfile = annepro2LedGetProfile();
+  annepro2LedSetProfile(currentProfile);
 }
 
