@@ -31,7 +31,7 @@ enum profile {
   GREEN,
   BLUE,
   RAINBOWHORIZONTAL,
-  RAINBOWVERTICAL, 
+  RAINBOWVERTICAL,
   ANIMATEDRAINBOWVERTICAL,
   ANIMATEDRAINBOWFLOW,
   ANIMATEDRAINBOWWATERFALL,
@@ -65,7 +65,7 @@ enum {
 * |-----------------------------------------------------------------------------------------+
 * | Tab    |  q  |  w  |  e  |  r  |  t  |  y  |  u  |  i  |  o  |  p  |  [  |  ]  |   \    |
 * |-----------------------------------------------------------------------------------------+
-* |-----------------------------------------------------------------------------------------+ | Shift      |  z  |  x  |  c  |  v  |  b  |  n  |  m  |  ,  |  .  |  /  |    Shift       |
+* | Shift      |  z  |  x  |  c  |  v  |  b  |  n  |  m  |  ,  |  .  |  /  |    Shift       |
 * |-----------------------------------------------------------------------------------------+
 * | Ctrl  |  FN2  |  Alt  |                FN2              |  Win  |  FN2  |  FN1  | Ctrl  |
 * \-----------------------------------------------------------------------------------------/
@@ -175,7 +175,7 @@ enum {
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R, _______, _______, _______, _______,
     _______, _______, KC_ACL0, KC_ACL1, KC_ACL2, _______, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, KC_BTN2, _______, _______,
-    _______, _______, _______, _______, _______, _______, KC_BTN3, KC_BTN4, KC_BTN5, _______, _______, _______, 
+    _______, _______, _______, _______, _______, _______, KC_BTN3, KC_BTN4, KC_BTN5, _______, _______, _______,
     _______, _______, _______, KC_BTN1, _______, _______, _______, _______
  ),
 };
@@ -292,7 +292,7 @@ void resetProfileColor(void) {
     annepro2LedSetForegroundColor(idle_profile[0], idle_profile[1], idle_profile[2]);
   } else {
     annepro2LedSetProfile(cyclabe_profiles[base_profile]);
-  } 
+  }
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
