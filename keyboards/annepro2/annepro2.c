@@ -146,6 +146,10 @@ bool OVERRIDE process_record_kb(uint16_t keycode, keyrecord_t *record) {
             case KC_AP_LED_SPEED:
                 annepro2LedNextAnimationSpeed();
                 return false;
+
+            case KC_AP_IAP_MODE:
+                annepro2SetIAP();
+                return false;
             default:
                 break;
         }

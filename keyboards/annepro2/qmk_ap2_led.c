@@ -5,6 +5,21 @@
 bool AP2_LED_ENABLED = false;
 bool AP2_LED_DYNAMIC_PROFILE = false;
 
+// sets IAP for LED and MCU
+void annepro2SetIAP(void)
+{
+  sdPut(&SD0, CMD_LED_IAP);
+
+  // wait for shine to go into IAP mode
+  wait_ms(15);
+
+  // Magic key to set keyboard to IAP
+  *((uint32_t*)0x20001ffc) = 0x0000fab2;
+
+  __disable_irq();
+  NVIC_SystemReset();
+}
+
 void annepro2LedDisable(void)
 {
   sdPut(&SD0, CMD_LED_OFF);
