@@ -29,6 +29,19 @@ uint16_t annepro2LedMatrix[MATRIX_ROWS * MATRIX_COLS] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 };
 
+void OVERRIDE bootloader_jump(void) {
+    sdPut(&SD0, CMD_LED_IAP);
+
+    // wait for shine to go into IAP mode
+    wait_ms(15);
+
+    // Magic key to set keyboard to IAP
+    *((uint32_t*)0x20001ffc) = 0x0000fab2;
+
+    __disable_irq();
+    NVIC_SystemReset();
+}
+
 void OVERRIDE keyboard_pre_init_kb(void) {
 #if HAL_USE_SPI == TRUE
     spi_init();
@@ -147,9 +160,6 @@ bool OVERRIDE process_record_kb(uint16_t keycode, keyrecord_t *record) {
                 annepro2LedNextAnimationSpeed();
                 return false;
 
-            case KC_AP_IAP_MODE:
-                annepro2SetIAP();
-                return false;
             default:
                 break;
         }
