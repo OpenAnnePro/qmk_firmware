@@ -30,14 +30,21 @@ uint16_t annepro2LedMatrix[MATRIX_ROWS * MATRIX_COLS] = {
 };
 
 void OVERRIDE bootloader_jump(void) {
+
+    // Send msg to shine to boot into IAP
     sdPut(&SD0, CMD_LED_IAP);
 
-    // wait for shine to go into IAP mode
+    // wait for shine to boot into IAP
+    wait_ms(15);
+
+    // Load ble into IAP
+    annepro2_ble_bootload();
     wait_ms(15);
 
     // Magic key to set keyboard to IAP
     *((uint32_t*)0x20001ffc) = 0x0000fab2;
 
+    // Load the main MCU into IAP
     __disable_irq();
     NVIC_SystemReset();
 }
