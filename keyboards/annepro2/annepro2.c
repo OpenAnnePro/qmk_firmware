@@ -4,6 +4,7 @@
 #include "annepro2_ble.h"
 #include "spi_master.h"
 #include "qmk_ap2_led.h"
+#include "protocol.h"
 
 static const SerialConfig ledUartConfig = {
   .speed = 115200,
@@ -17,22 +18,12 @@ static uint8_t ledMcuWakeup[11] = {
     0x7b, 0x10, 0x43, 0x10, 0x03, 0x00, 0x00, 0x7d, 0x02, 0x01, 0x02
 };
 
-static bool ledEnabled = false;
-
 ble_capslock_t BLECapsLock = {._dummy = {0}, .caps_lock = false};
-
-uint16_t annepro2LedMatrix[MATRIX_ROWS * MATRIX_COLS] = {
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-};
 
 void OVERRIDE bootloader_jump(void) {
 
     // Send msg to shine to boot into IAP
-    sdPut(&SD0, CMD_LED_IAP);
+    annepro2SetIAP();
 
     // wait for shine to boot into IAP
     wait_ms(15);
@@ -59,6 +50,8 @@ void OVERRIDE keyboard_pre_init_kb(void) {
     // wait to receive response from wakeup
     wait_ms(15);
 
+    protoInit(&proto, ledCommandCallback);
+
     // loop to clear out receive buffer from shine wakeup
     while(!sdGetWouldBlock(&SD0))
         sdGet(&SD0);
@@ -79,6 +72,8 @@ void OVERRIDE keyboard_post_init_kb(void) {
     while(!sdGetWouldBlock(&SD1))
         sdGet(&SD1);
 
+    annepro2LedGetStatus();
+
     keyboard_post_init_user();
 }
 
@@ -94,12 +89,17 @@ void matrix_scan_kb() {
 
         // if it's capslock from ble, darken led
         if (BLECapsLock.caps_lock) {
-            annepro2LedClearMask(MATRIX_COLS * 2);
+            // annepro2LedClearMask(MATRIX_COLS * 2);
         } else {
-            annepro2LedSetMask(MATRIX_COLS * 2);
+            // annepro2LedSetMask(MATRIX_COLS * 2);
         }
     }
 
+    /* While there's data from LED keyboard sent - read it. */
+    while (!sdGetWouldBlock(&SD0)) {
+        uint8_t byte = sdGet(&SD0);
+        protoConsume(&proto, byte);
+    }
 
     matrix_scan_user();
 }
@@ -109,7 +109,7 @@ void matrix_scan_kb() {
  */
 bool OVERRIDE process_record_kb(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
-        if (AP2_LED_ENABLED && AP2_LED_DYNAMIC_PROFILE && !AP2_FOREGROUND_COLOR_SET) {
+        if (annepro2LedStatus.matrixEnabled && annepro2LedStatus.isReactive) {
             annepro2LedForwardKeypress(record->event.key.row, record->event.key.col);
         }
 
@@ -140,14 +140,12 @@ bool OVERRIDE process_record_kb(uint16_t keycode, keyrecord_t *record) {
 
             case KC_AP_LED_OFF:
                 annepro2LedDisable();
-                ledEnabled = false;
                 break;
 
             case KC_AP_LED_ON:
-                if (ledEnabled) {
+                if (annepro2LedStatus.matrixEnabled) {
                     annepro2LedNextProfile();
                 } else {
-                    ledEnabled = true;
                     annepro2LedEnable();
                 }
                 break;

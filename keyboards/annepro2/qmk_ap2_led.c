@@ -1,115 +1,72 @@
+#include <string.h>
+#include <stdio.h>
 #include "hal.h"
 #include "annepro2.h"
 #include "qmk_ap2_led.h"
+#include "protocol.h"
 
-bool AP2_LED_ENABLED = false;
-bool AP2_LED_DYNAMIC_PROFILE = false;
-bool AP2_FOREGROUND_COLOR_SET = false;
+annepro2LedStatus_t annepro2LedStatus;
 
-void annepro2LedDisable(void)
-{
-  sdPut(&SD0, CMD_LED_OFF);
-  AP2_LED_ENABLED = false;
+void ledCommandCallback(message_t *msg) {
+    switch (msg->command) {
+        case CMD_LED_STATUS:
+            annepro2LedStatus.amountOfProfiles = msg->payload[0];
+            annepro2LedStatus.currentProfile   = msg->payload[1];
+            annepro2LedStatus.matrixEnabled    = msg->payload[2];
+            annepro2LedStatus.isReactive       = msg->payload[3];
+            annepro2LedStatus.ledIntensity     = msg->payload[4];
+            annepro2LedStatus.errors           = msg->payload[5];
+            break;
+
+#ifdef CONSOLE_ENABLE
+        case CMD_LED_DEBUG:
+            /* TODO: Don't use printf. */
+            printf("LED:");
+            for (int i = 0; i < msg->payloadSize; i++) {
+                printf("%c", msg->payload[i]);
+            }
+            printf("\n");
+            break;
+#endif
+    }
 }
 
-void annepro2LedEnable(void)
-{
-  sdPut(&SD0, CMD_LED_ON);
-  AP2_LED_ENABLED = true;
+void annepro2SetIAP(void) { protoTx(CMD_LED_IAP, NULL, 0, 3); }
+
+void annepro2LedDisable(void) { protoTx(CMD_LED_OFF, NULL, 0, 3); }
+
+void annepro2LedEnable(void) { protoTx(CMD_LED_ON, NULL, 0, 3); }
+
+void annepro2LedSetProfile(uint8_t prof) { protoTx(CMD_LED_SET_PROFILE, &prof, sizeof(prof), 3); }
+
+void annepro2LedGetStatus() { protoTx(CMD_LED_GET_STATUS, NULL, 0, 3); }
+
+void annepro2LedNextProfile() { protoTx(CMD_LED_NEXT_PROFILE, NULL, 0, 3); }
+
+void annepro2LedNextIntensity() { protoTx(CMD_LED_NEXT_INTENSITY, NULL, 0, 3); }
+
+void annepro2LedNextAnimationSpeed() { protoTx(CMD_LED_NEXT_ANIMATION_SPEED, NULL, 0, 3); }
+
+void annepro2LedPrevProfile() { protoTx(CMD_LED_PREV_PROFILE, NULL, 0, 3); }
+
+void annepro2LedSetForegroundColor(uint8_t red, uint8_t green, uint8_t blue) {
+    // TODO
+    // uint8_t colors[3] = {red, green, blue};
+    // protoTx(CMD_LED_SET_FOREGROUND_COLOR, colors, sizeof(colors), 1);
 }
 
-void annepro2LedUpdate(uint8_t row, uint8_t col)
-{
-  sdPut(&SD0, CMD_LED_SET);
-  sdPut(&SD0, row);
-  sdPut(&SD0, col);
-  sdWrite(&SD0, (uint8_t *)&annepro2LedMatrix[row * MATRIX_COLS + col], sizeof(uint16_t));
-}
-
-void annepro2LedUpdateRow(uint8_t row)
-{
-  sdPut(&SD0, CMD_LED_SET_ROW);
-  sdPut(&SD0, row);
-  sdWrite(&SD0, (uint8_t *)&annepro2LedMatrix[row * MATRIX_COLS], sizeof(uint16_t) * MATRIX_COLS);
-}
-
-void annepro2LedSetProfile(uint8_t prof)
-{
-  sdPut(&SD0, CMD_LED_SET_PROFILE);
-  sdPut(&SD0, prof);
-  uint8_t buf = sdGet(&SD0);
-  AP2_LED_DYNAMIC_PROFILE = buf;
-}
-
-uint8_t annepro2LedGetProfile()
-{
-  uint8_t buf = 0;
-  sdPut(&SD0, CMD_LED_GET_PROFILE);
-  buf = sdGet(&SD0);
-  return buf;
-}
-
-uint8_t annepro2LedGetNumProfiles()
-{
-  uint8_t buf = 0;
-  sdPut(&SD0, CMD_LED_GET_NUM_PROFILES);
-  buf = sdGet(&SD0);
-  return buf;
-}
-
-void annepro2LedNextProfile()
-{
-  sdPut(&SD0, CMD_LED_NEXT_PROFILE);
-  uint8_t buf = sdGet(&SD0);
-  AP2_LED_DYNAMIC_PROFILE = buf;
-}
-
-void annepro2LedNextIntensity()
-{
-  sdPut(&SD0, CMD_LED_NEXT_INTENSITY);
-}
-
-void annepro2LedNextAnimationSpeed()
-{
-  sdPut(&SD0, CMD_LED_NEXT_ANIMATION_SPEED);
-}
-
-void annepro2LedPrevProfile()
-{
-  sdPut(&SD0, CMD_LED_PREV_PROFILE);
-  uint8_t buf = sdGet(&SD0);
-  AP2_LED_DYNAMIC_PROFILE = buf;
-}
-
-void annepro2LedSetMask(uint8_t key)
-{
-  sdPut(&SD0, CMD_LED_SET_MASK);
-  sdPut(&SD0, key);
-}
-
-void annepro2LedClearMask(uint8_t key)
-{
-  sdPut(&SD0, CMD_LED_CLEAR_MASK);
-  sdPut(&SD0, key);
-}
-
-void annepro2LedSetForegroundColor(uint8_t red, uint8_t green, uint8_t blue)
-{
-  sdPut(&SD0, CMD_LED_SET_FOREGROUND_COLOR);
-  uint8_t colors[3]={red,green,blue};
-  sdWrite(&SD0, (uint8_t *)&colors, sizeof(colors));
-  AP2_FOREGROUND_COLOR_SET = true;
-}
-
-void annepro2LedResetForegroundColor()
-{
-  sdPut(&SD0, CMD_LED_CLEAR_FOREGROUND_COLOR);
-  uint8_t buf = sdGet(&SD0);
-  AP2_LED_DYNAMIC_PROFILE = buf;
-  AP2_FOREGROUND_COLOR_SET = false;
+void annepro2LedResetForegroundColor() {
+    // TODO
+    // protoTx(CMD_LED_CLEAR_FOREGROUND_COLOR, NULL, 0, 1);
 }
 
 /*
+ * Currently keypresses are unified with other messages, still with single 1
+ * byte payload. Transfer is normally fast enough for that to not be a problem -
+ * especially with asynchronous message reading.
+ *
+ *
+ * Previous description:
  * If enabled, this data is sent to LED MCU on every keypress.
  * In order to improve performance, both row and column values
  * are packed into a single byte.
@@ -121,8 +78,7 @@ void annepro2LedResetForegroundColor()
  * Following it are 3 bits of row and 4 bits of col.
  * 1 + 3 + 4 = 8 bits - only a single byte is sent for every keypress.
  */
-void annepro2LedForwardKeypress(uint8_t row, uint8_t col)
-{
-  uint8_t msg = 0b10000000 | (row << 4) | col;
-  sdPut(&SD0, msg);
+void annepro2LedForwardKeypress(uint8_t row, uint8_t col) {
+    const uint8_t payload = row << 4 | col;
+    protoTx(CMD_LED_KEY_DOWN, &payload, 1, 1);
 }
