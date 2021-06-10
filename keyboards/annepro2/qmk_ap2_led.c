@@ -50,13 +50,20 @@ void annepro2LedNextAnimationSpeed() { protoTx(CMD_LED_NEXT_ANIMATION_SPEED, NUL
 
 void annepro2LedPrevProfile() { protoTx(CMD_LED_PREV_PROFILE, NULL, 0, 3); }
 
-void annepro2LedMaskSetKey(uint8_t row, uint8_t col, annepro2Led_t color) {}
+void annepro2LedMaskSetKey(uint8_t row, uint8_t col, annepro2Led_t color) {
+    uint8_t payload[] = {row, col, color.p.blue, color.p.green, color.p.red, color.p.alpha};
+    protoTx(CMD_LED_MASK_SET_KEY, payload, sizeof(payload), 1);
+}
 
 /* Push a whole local row to the shine */
-void annepro2LedMaskSetRow(uint8_t row) {}
+void annepro2LedMaskSetRow(uint8_t row) {
+    // TODO
+}
 
 /* Synchronize all rows */
-void annepro2LedMaskSetAll(void) {}
+void annepro2LedMaskSetAll(void) {
+    for (int row = 0; row < 5; row++) annepro2LedMaskSetRow(row);
+}
 
 /* Set all keys to a given color */
 void annepro2LedMaskSetMono(const annepro2Led_t color) { protoTx(CMD_LED_MASK_SET_MONO, (uint8_t *)&color, sizeof(color), 1); }
