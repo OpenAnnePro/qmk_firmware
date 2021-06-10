@@ -6,22 +6,27 @@
 #include "qmk_ap2_led.h"
 #include "protocol.h"
 
-static const SerialConfig ledUartConfig = {
-  .speed = 115200,
+static const SerialConfig ledUartInitConfig = {
+    .speed = 115200,
+};
+
+/*
+ * Some people have serial issues between main chip and led chip.
+ * This code allows them to easily reduce the speed to 9600 for testing
+ */
+static const SerialConfig ledUartRuntimeConfig = {
+    .speed = 115200,
 };
 
 static const SerialConfig bleUartConfig = {
-  .speed = 115200,
+    .speed = 115200,
 };
 
-static uint8_t ledMcuWakeup[11] = {
-    0x7b, 0x10, 0x43, 0x10, 0x03, 0x00, 0x00, 0x7d, 0x02, 0x01, 0x02
-};
+static uint8_t ledMcuWakeup[11] = {0x7b, 0x10, 0x43, 0x10, 0x03, 0x00, 0x00, 0x7d, 0x02, 0x01, 0x02};
 
 ble_capslock_t BLECapsLock = {._dummy = {0}, .caps_lock = false};
 
 void OVERRIDE bootloader_jump(void) {
-
     // Send msg to shine to boot into IAP
     annepro2SetIAP();
 
@@ -33,7 +38,7 @@ void OVERRIDE bootloader_jump(void) {
     wait_ms(15);
 
     // Magic key to set keyboard to IAP
-    *((uint32_t*)0x20001ffc) = 0x0000fab2;
+    *((uint32_t *)0x20001ffc) = 0x0000fab2;
 
     // Load the main MCU into IAP
     __disable_irq();
@@ -45,7 +50,7 @@ void OVERRIDE keyboard_pre_init_kb(void) {
     spi_init();
 #endif
     // Start LED UART
-    sdStart(&SD0, &ledUartConfig);
+    sdStart(&SD0, &ledUartInitConfig);
     sdWrite(&SD0, ledMcuWakeup, 11);
     // wait to receive response from wakeup
     wait_ms(15);
@@ -53,13 +58,12 @@ void OVERRIDE keyboard_pre_init_kb(void) {
     protoInit(&proto, ledCommandCallback);
 
     // loop to clear out receive buffer from shine wakeup
-    while(!sdGetWouldBlock(&SD0))
-        sdGet(&SD0);
+    while (!sdGetWouldBlock(&SD0)) sdGet(&SD0);
+
+    sdStart(&SD0, &ledUartRuntimeConfig);
 }
 
 void OVERRIDE keyboard_post_init_kb(void) {
-
-
     // Start BLE UART
     sdStart(&SD1, &bleUartConfig);
     annepro2_ble_startup();
@@ -69,23 +73,20 @@ void OVERRIDE keyboard_post_init_kb(void) {
     wait_ms(15);
 
     // loop to clear out receive buffer from ble wakeup
-    while(!sdGetWouldBlock(&SD1))
-        sdGet(&SD1);
+    while (!sdGetWouldBlock(&SD1)) sdGet(&SD1);
 
     annepro2LedGetStatus();
 
     keyboard_post_init_user();
 }
 
-void OVERRIDE matrix_init_kb(void) {
-    matrix_init_user();
-}
+void OVERRIDE matrix_init_kb(void) { matrix_init_user(); }
 
 void matrix_scan_kb() {
     // if there's stuff on the ble serial buffer
     // read it into the capslock struct
-    while(!sdGetWouldBlock(&SD1)) {
-        sdReadTimeout(&SD1, (uint8_t *) &BLECapsLock, sizeof(ble_capslock_t), 10);
+    while (!sdGetWouldBlock(&SD1)) {
+        sdReadTimeout(&SD1, (uint8_t *)&BLECapsLock, sizeof(ble_capslock_t), 10);
 
         // if it's capslock from ble, darken led
         if (BLECapsLock.caps_lock) {
