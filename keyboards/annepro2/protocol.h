@@ -2,7 +2,8 @@
  * (c) 2021 by Tomasz bla Fortuna
  * License: GPLv2
  *
- * This file is shared with Shine firmware.
+ * This file is shared with the Shine firmware. Keep it in sync (and in the
+ * shine's clang formatting).
  */
 
 #ifndef PROTOCOL_INCLUDED
@@ -29,23 +30,21 @@ enum {
   /* Masks */
   /* Override a key color, eg. capslock */
   CMD_LED_MASK_SET_KEY = 0x10,
-  /* Override all keys individually (huge payload) */
-  CMD_LED_MASK_SET_ALL = 0x11,
+  /* Override all keys in a row with configurable colors */
+  CMD_LED_MASK_SET_ROW = 0x11,
 
   /* Override all keys with single color (eg. foreground color) */
-  CMD_LED_MASK_SET_SINGLE = 0x12,
-  /* Clear color override completely */
-  CMD_LED_MASK_CLEAR = 0x13,
+  CMD_LED_MASK_SET_MONO = 0x12,
 
   /* Reactive / status */
   CMD_LED_GET_STATUS = 0x20,
-  CMD_LED_KEY_BT_BLINK = 0x21, /* TODO: Blue blink */
+  CMD_LED_KEY_BLINK = 0x21,
   CMD_LED_KEY_DOWN = 0x22,
   CMD_LED_KEY_UP = 0x23, /* TODO */
   CMD_LED_IAP = 0x24,
 
   /* LED -> Main */
-  /* TODO: Payload with data to send over HID */
+  /* Payload with data to send over HID */
   CMD_LED_DEBUG = 0x40,
 
   /* Number of profiles, current profile, on/off state,
@@ -56,18 +55,19 @@ enum {
 /* 4 ROWS * 14 COLS * 4B (RGBX) = 224 */
 #define MAX_PAYLOAD_SIZE 230
 
+/** Enum of the states used for the serial protocol finite-state automaton */
 enum protoState {
   /* 2-byte initial start-of-message sync */
-  FSA_SYNC_1,
-  FSA_SYNC_2,
+  STATE_SYNC_1,
+  STATE_SYNC_2,
   /* Waiting for command byte */
-  FSA_CMD,
+  STATE_CMD,
   /* Waiting for ID byte */
-  FSA_ID,
+  STATE_ID,
   /* Waiting for payload size */
-  FSA_PAYLOAD_SIZE,
+  STATE_PAYLOAD_SIZE,
   /* Reading payload until payloadPosition == payloadSize */
-  FSA_PAYLOAD,
+  STATE_PAYLOAD,
 };
 
 /* Buffer holding a single message */
@@ -81,7 +81,7 @@ typedef struct {
 /* Internal protocol state */
 typedef struct {
   /* Callback to call upon receiving a valid message */
-  void (*callback)(message_t *);
+  void (*callback)(const message_t *);
 
   /* Number of read payload bytes */
   uint8_t payloadPosition;
@@ -100,7 +100,7 @@ typedef struct {
 extern protocol_t proto;
 
 /* Init state */
-extern void protoInit(protocol_t *proto, void (*callback)(message_t *));
+extern void protoInit(protocol_t *proto, void (*callback)(const message_t *));
 
 /* Consume one byte and push state forward - might call the callback */
 extern void protoConsume(protocol_t *proto, uint8_t byte);

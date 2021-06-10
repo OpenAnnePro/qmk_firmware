@@ -2,7 +2,8 @@
  * (c) 2021 by Tomasz bla Fortuna
  * License: GPLv2
  *
- * This file is shared with Shine firmware.
+ * This file is shared with the Shine firmware. Keep it in sync (and in the
+ * shine's clang formatting).
  */
 
 #include "protocol.h"
@@ -13,10 +14,10 @@
 /* UART communication protocol state */
 protocol_t proto;
 
-void protoInit(protocol_t *proto, void (*callback)(message_t *)) {
+void protoInit(protocol_t *proto, void (*callback)(const message_t *)) {
   proto->previousId = 0;
   proto->callback = callback;
-  proto->state = FSA_SYNC_1;
+  proto->state = STATE_SYNC_1;
   proto->errors = 0;
 }
 
@@ -44,44 +45,44 @@ void protoTx(uint8_t cmd, const unsigned char *buf, int payloadSize,
 }
 
 static inline void messageReceived(protocol_t *proto) {
-    if (proto->buffer.msgId != proto->previousId) {
-        /* It's not a resend / duplicate */
-        proto->callback(&proto->buffer);
-        proto->previousId = proto->buffer.msgId;
-    }
-    proto->state = FSA_SYNC_1;
+  if (proto->buffer.msgId != proto->previousId) {
+    /* It's not a resend / duplicate */
+    proto->callback(&proto->buffer);
+    proto->previousId = proto->buffer.msgId;
+  }
+  proto->state = STATE_SYNC_1;
 }
 
 void protoConsume(protocol_t *proto, uint8_t byte) {
   switch (proto->state) {
-  case FSA_SYNC_1:
+  case STATE_SYNC_1:
     if (byte == 0x7A) {
-      proto->state = FSA_SYNC_2;
+      proto->state = STATE_SYNC_2;
     } else {
       proto->errors++;
     }
     return;
 
-  case FSA_SYNC_2:
+  case STATE_SYNC_2:
     if (byte == 0x1D) {
-      proto->state = FSA_CMD;
+      proto->state = STATE_CMD;
     } else {
-      proto->state = FSA_SYNC_1;
+      proto->state = STATE_SYNC_1;
       proto->errors++;
     }
     return;
 
-  case FSA_CMD:
+  case STATE_CMD:
     proto->buffer.command = byte;
-    proto->state = FSA_ID;
+    proto->state = STATE_ID;
     return;
 
-  case FSA_ID:
+  case STATE_ID:
     proto->buffer.msgId = byte;
-    proto->state = FSA_PAYLOAD_SIZE;
+    proto->state = STATE_PAYLOAD_SIZE;
     return;
 
-  case FSA_PAYLOAD_SIZE:
+  case STATE_PAYLOAD_SIZE:
     proto->buffer.payloadSize = byte;
     if (proto->buffer.payloadSize > MAX_PAYLOAD_SIZE) {
       proto->buffer.payloadSize = MAX_PAYLOAD_SIZE;
@@ -92,11 +93,11 @@ void protoConsume(protocol_t *proto, uint8_t byte) {
       /* No payload - whole message received */
       messageReceived(proto);
     } else {
-      proto->state = FSA_PAYLOAD;
+      proto->state = STATE_PAYLOAD;
     }
     return;
 
-  case FSA_PAYLOAD:
+  case STATE_PAYLOAD:
     /* NOTE: This could be read with sdReadTimeout probably, but that breaks
      * abstraction */
     proto->buffer.payload[proto->payloadPosition] = byte;
@@ -110,8 +111,8 @@ void protoConsume(protocol_t *proto, uint8_t byte) {
 }
 
 void protoSilence(protocol_t *proto) {
-  if (proto->state != FSA_SYNC_1) {
-    proto->state = FSA_SYNC_1;
+  if (proto->state != STATE_SYNC_1) {
+    proto->state = STATE_SYNC_1;
     proto->errors++;
   }
 }

@@ -5,9 +5,10 @@
 #include "qmk_ap2_led.h"
 #include "protocol.h"
 
+annepro2Led_t       ledMask[KEY_COUNT];
 annepro2LedStatus_t annepro2LedStatus;
 
-void ledCommandCallback(message_t *msg) {
+void ledCommandCallback(const message_t *msg) {
     switch (msg->command) {
         case CMD_LED_STATUS:
             annepro2LedStatus.amountOfProfiles = msg->payload[0];
@@ -49,15 +50,30 @@ void annepro2LedNextAnimationSpeed() { protoTx(CMD_LED_NEXT_ANIMATION_SPEED, NUL
 
 void annepro2LedPrevProfile() { protoTx(CMD_LED_PREV_PROFILE, NULL, 0, 3); }
 
+void annepro2LedMaskSetKey(uint8_t row, uint8_t col, annepro2Led_t color) {}
+
+/* Push a whole local row to the shine */
+void annepro2LedMaskSetRow(uint8_t row) {}
+
+/* Synchronize all rows */
+void annepro2LedMaskSetAll(void) {}
+
+/* Set all keys to a given color */
+void annepro2LedMaskSetMono(const annepro2Led_t color) { protoTx(CMD_LED_MASK_SET_MONO, (uint8_t *)&color, sizeof(color), 1); }
+
 void annepro2LedSetForegroundColor(uint8_t red, uint8_t green, uint8_t blue) {
-    // TODO
-    // uint8_t colors[3] = {red, green, blue};
-    // protoTx(CMD_LED_SET_FOREGROUND_COLOR, colors, sizeof(colors), 1);
+    annepro2Led_t color = {.p.red = red, .p.green = green, .p.blue = blue, .p.alpha = 0xff};
+    annepro2LedMaskSetMono(color);
 }
 
 void annepro2LedResetForegroundColor() {
-    // TODO
-    // protoTx(CMD_LED_CLEAR_FOREGROUND_COLOR, NULL, 0, 1);
+    annepro2Led_t color = {
+        .p.red   = 0,
+        .p.green = 0,
+        .p.blue  = 0,
+        .p.alpha = 0,
+    };
+    annepro2LedMaskSetMono(color);
 }
 
 /*
