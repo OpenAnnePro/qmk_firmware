@@ -149,21 +149,27 @@ bool OVERRIDE process_record_kb(uint16_t keycode, keyrecord_t *record) {
                 } else {
                     annepro2LedEnable();
                 }
+                annepro2LedResetForegroundColor();
                 break;
 
             case KC_AP_LED_NEXT_PROFILE:
                 annepro2LedNextProfile();
+                annepro2LedResetForegroundColor();
                 break;
 
             case KC_AP_LED_PREV_PROFILE:
                 annepro2LedPrevProfile();
+                annepro2LedResetForegroundColor();
                 break;
 
             case KC_AP_LED_NEXT_INTENSITY:
                 annepro2LedNextIntensity();
+                annepro2LedResetForegroundColor();
                 return false;
+
             case KC_AP_LED_SPEED:
                 annepro2LedNextAnimationSpeed();
+                annepro2LedResetForegroundColor();
                 return false;
 
             default:

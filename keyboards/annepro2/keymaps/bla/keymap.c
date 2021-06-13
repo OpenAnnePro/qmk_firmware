@@ -129,7 +129,8 @@ layer_state_t layer_state_set_user(layer_state_t layer) {
   return layer;
 }
 
-// The function to handle the caps lock logic
+// The function to handle the caps lock logic. It's executed after caps or layer
+// changes state, after layer_state_set_user.
 bool led_update_user(led_t leds) {
   if (leds.caps_lock) {
       const annepro2Led_t color = {
@@ -140,7 +141,10 @@ bool led_update_user(led_t leds) {
       };
 
       annepro2LedMaskSetKey(2, 0, color);
-  } else {
+      return true;
+  }
+
+  if(!layer_state_is(_FN1_LY) && !layer_state_is(_FN2_LY)) {
       const annepro2Led_t color = {
           .p.red = 0xff,
           .p.green = 0x00,

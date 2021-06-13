@@ -57,7 +57,10 @@ void annepro2LedMaskSetKey(uint8_t row, uint8_t col, annepro2Led_t color) {
 
 /* Push a whole local row to the shine */
 void annepro2LedMaskSetRow(uint8_t row) {
-    // TODO
+    uint8_t payload[NUM_COLUMN * sizeof(annepro2Led_t) + 1];
+    payload[0] = row;
+    memcpy(payload + 1, &ledMask[ROWCOL2IDX(row, 0)], sizeof(*ledMask) * NUM_COLUMN);
+    protoTx(CMD_LED_MASK_SET_KEY, payload, sizeof(payload), 1);
 }
 
 /* Synchronize all rows */
