@@ -24,6 +24,9 @@ void ledCommandCallback(const message_t *msg) {
             /* TODO: Don't use printf. */
             printf("LED:");
             for (int i = 0; i < msg->payloadSize; i++) {
+                printf("%02x ", msg->payload[i]);
+            }
+            for (int i = 0; i < msg->payloadSize; i++) {
                 printf("%c", msg->payload[i]);
             }
             printf("\n");
@@ -70,6 +73,11 @@ void annepro2LedMaskSetAll(void) {
 
 /* Set all keys to a given color */
 void annepro2LedMaskSetMono(const annepro2Led_t color) { protoTx(CMD_LED_MASK_SET_MONO, (uint8_t *)&color, sizeof(color), 1); }
+
+void annepro2LedBlink(uint8_t row, uint8_t col, annepro2Led_t color, uint8_t count, uint8_t hundredths) {
+    uint8_t payload[] = {row, col, color.p.blue, color.p.green, color.p.red, color.p.alpha, count, hundredths};
+    protoTx(CMD_LED_KEY_BLINK, payload, sizeof(payload), 1);
+}
 
 void annepro2LedSetForegroundColor(uint8_t red, uint8_t green, uint8_t blue) {
     annepro2Led_t color = {.p.red = red, .p.green = green, .p.blue = blue, .p.alpha = 0xff};

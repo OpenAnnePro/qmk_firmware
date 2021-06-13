@@ -49,6 +49,9 @@ void annepro2LedMaskSetAll(void);
 /* Set all keys to a given color */
 void annepro2LedMaskSetMono(annepro2Led_t color);
 
+/* Blink given key `count` times by masking it with a `color`. Blink takes `hundredths` of a second */
+void annepro2LedBlink(uint8_t row, uint8_t col, annepro2Led_t color, uint8_t count, uint8_t hundredths);
+
 /* Kept for compatibility, but implemented using masks */
 void annepro2LedSetForegroundColor(uint8_t red, uint8_t green, uint8_t blue);
 void annepro2LedResetForegroundColor(void);

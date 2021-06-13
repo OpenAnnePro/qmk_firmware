@@ -114,21 +114,33 @@ bool OVERRIDE process_record_kb(uint16_t keycode, keyrecord_t *record) {
             annepro2LedForwardKeypress(record->event.key.row, record->event.key.col);
         }
 
+        const annepro2Led_t blue = {
+            .p.blue  = 0xff,
+            .p.red   = 0x00,
+            .p.green = 0x00,
+            .p.alpha = 0xff,
+        };
+
         switch (keycode) {
             case KC_AP2_BT1:
                 annepro2_ble_broadcast(0);
+                /* FIXME: This hardcodes col/row position */
+                annepro2LedBlink(0, 1, blue, 6, 50);
                 return false;
 
             case KC_AP2_BT2:
                 annepro2_ble_broadcast(1);
+                annepro2LedBlink(0, 2, blue, 6, 50);
                 return false;
 
             case KC_AP2_BT3:
                 annepro2_ble_broadcast(2);
+                annepro2LedBlink(0, 3, blue, 6, 50);
                 return false;
 
             case KC_AP2_BT4:
                 annepro2_ble_broadcast(3);
+                annepro2LedBlink(0, 4, blue, 6, 50);
                 return false;
 
             case KC_AP2_USB:
