@@ -52,8 +52,8 @@ enum {
   CMD_LED_STATUS = 0x41,
 };
 
-/* 4 ROWS * 14 COLS * 4B (RGBX) = 224 */
-#define MAX_PAYLOAD_SIZE 230
+/* 1 ROW * 14 COLS * 4B (RGBX) = 56 + header prefix. */
+#define MAX_PAYLOAD_SIZE 64
 
 /** Enum of the states used for the serial protocol finite-state automaton */
 enum protoState {
@@ -74,8 +74,8 @@ enum protoState {
 typedef struct {
   uint8_t command;
   uint8_t msgId;
-  uint8_t payload[MAX_PAYLOAD_SIZE];
   uint8_t payloadSize;
+  uint8_t payload[MAX_PAYLOAD_SIZE];
 } message_t;
 
 /* Internal protocol state */
@@ -92,7 +92,7 @@ typedef struct {
   uint8_t previousId;
   uint8_t errors;
 
-  /* Currently constructed message */
+  /* Currently received message */
   message_t buffer;
 } protocol_t;
 

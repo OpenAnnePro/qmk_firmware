@@ -4,6 +4,12 @@
  *
  * This file is shared with the Shine firmware. Keep it in sync (and in the
  * shine's clang formatting).
+ *
+ * Implementation of a robust serial protocol which can handle single dropped
+ * characters during transit without locking.
+ *
+ * At 115200, transmitting the shortest message takes 0.043ms, at 9600 - 0.52ms.
+ *
  */
 
 #include "protocol.h"
@@ -21,15 +27,9 @@ void protoInit(protocol_t *proto, void (*callback)(const message_t *)) {
   proto->errors = 0;
 }
 
-/*
- * A more robust serial protocol which can handle single dropped characters
- * during transit. At 115200, transmitting the shortest message takes 0.043ms,
- * at 9600 - 0.52ms.
- * TODO: ACKing by msgId instead of blind retrying
- */
+static uint8_t msgId = 0;
 void protoTx(uint8_t cmd, const unsigned char *buf, int payloadSize,
              int retries) {
-  static uint8_t msgId = 0;
   chDbgCheck(payloadSize <= MAX_PAYLOAD_SIZE);
 
   const uint8_t header[5] = {
